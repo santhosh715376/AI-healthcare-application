@@ -1,0 +1,22 @@
+# Virtual environments
+venv/
+.venv/
+agents/venv/
+
+# Node dependencies
+node_modules/
+dist/
+build/
+
+# Python cache & build outputs
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+
+# OS / IDE metadata
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

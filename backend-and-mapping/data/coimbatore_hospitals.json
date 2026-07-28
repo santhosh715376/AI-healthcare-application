@@ -1,0 +1,15 @@
+[
+  {
+    "id": "hosp-cb-001",
+    "name": "Kovai Medical Center and Hospital (KMCH)",
+    "specialties": ["Cardiology", "Neurology", "Oncology", "Emergency Care"],
+    "location": {
+      "lat": 11.0450,
+      "lng": 77.0350,
+      "address": "Avinashi Road, Coimbatore, Tamil Nadu 641014"
+    },
+    "emergencyServices": true,
+    "acceptedInsurance": ["Star Health", "HDFC ERGO", "Religare"],
+    "rating": 4.8
+  }
+]

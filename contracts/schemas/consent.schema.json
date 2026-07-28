@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Consent",
+  "type": "object",
+  "properties": {
+    "consentId": { "type": "string" },
+    "patientId": { "type": "string" },
+    "providerId": { "type": "string" },
+    "granted": { "type": "boolean" },
+    "grantedAt": { "type": "string" },
+    "expiresAt": { "type": "string" }
+  },
+  "required": ["consentId", "patientId", "providerId", "granted"]
+}

@@ -1,0 +1,10 @@
+[out:json];
+area["name"="Coimbatore"]->.searchArea;
+(
+  node["amenity"="hospital"](area.searchArea);
+  way["amenity"="hospital"](area.searchArea);
+  relation["amenity"="hospital"](area.searchArea);
+);
+out body;
+>;
+out skel qt;

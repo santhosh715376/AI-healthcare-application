@@ -1,0 +1,23 @@
+{
+  "specialtySuggestion": {
+    "suggestedSpecialty": "Cardiology",
+    "reasoning": "Symptoms of chest tightness and shortness of breath strongly indicate cardiovascular evaluation.",
+    "confidence": 0.92
+  },
+  "rankedHospitals": [
+    {
+      "hospitalId": "hosp-001",
+      "hospitalName": "Kovai Medical Center and Hospital (KMCH)",
+      "rank": 1,
+      "score": 0.94,
+      "reason": "Comprehensive cardiac care unit available 24/7 with high emergency score."
+    },
+    {
+      "hospitalId": "hosp-002",
+      "hospitalName": "G. Kuppuswamy Naidu Memorial Hospital (GKNM)",
+      "rank": 2,
+      "score": 0.88,
+      "reason": "Top-tier cardiology department, closer proximity."
+    }
+  ]
+}

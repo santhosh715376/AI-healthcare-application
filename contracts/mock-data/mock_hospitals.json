@@ -1,0 +1,41 @@
+[
+  {
+    "id": "hosp-001",
+    "name": "Kovai Medical Center and Hospital (KMCH)",
+    "specialties": ["Cardiology", "Neurology", "Oncology", "Emergency Care"],
+    "location": {
+      "lat": 11.0450,
+      "lng": 77.0350,
+      "address": "Avinashi Road, Coimbatore, Tamil Nadu 641014"
+    },
+    "emergencyServices": true,
+    "acceptedInsurance": ["Star Health", "HDFC ERGO", "Religare"],
+    "rating": 4.8
+  },
+  {
+    "id": "hosp-002",
+    "name": "G. Kuppuswamy Naidu Memorial Hospital (GKNM)",
+    "specialties": ["Pediatrics", "Cardiology", "Orthopedics"],
+    "location": {
+      "lat": 11.0118,
+      "lng": 76.9740,
+      "address": "PN Palayam, Coimbatore, Tamil Nadu 641037"
+    },
+    "emergencyServices": true,
+    "acceptedInsurance": ["Star Health", "Max Bupa"],
+    "rating": 4.6
+  },
+  {
+    "id": "hosp-003",
+    "name": "PSG Hospitals",
+    "specialties": ["General Medicine", "Gastroenterology", "Nephrology"],
+    "location": {
+      "lat": 11.0264,
+      "lng": 77.0033,
+      "address": "Peelamedu, Coimbatore, Tamil Nadu 641004"
+    },
+    "emergencyServices": true,
+    "acceptedInsurance": ["Star Health", "ICICI Lombard", "HDFC ERGO"],
+    "rating": 4.7
+  }
+]

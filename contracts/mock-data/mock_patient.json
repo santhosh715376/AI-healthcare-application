@@ -1,0 +1,12 @@
+{
+  "id": "pat-1001",
+  "name": "Ramesh Kumar",
+  "age": 42,
+  "gender": "Male",
+  "contact": "+91 98765 43210",
+  "location": {
+    "lat": 11.0168,
+    "lng": 76.9558,
+    "address": "RS Puram, Coimbatore, Tamil Nadu"
+  }
+}

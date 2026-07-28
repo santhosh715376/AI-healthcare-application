@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Prescription",
+  "type": "object",
+  "properties": {
+    "id": { "type": "string" },
+    "patientId": { "type": "string" },
+    "doctorName": { "type": "string" },
+    "date": { "type": "string" },
+    "medications": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "dosage": { "type": "string" },
+          "frequency": { "type": "string" }
+        },
+        "required": ["name", "dosage"]
+      }
+    }
+  },
+  "required": ["id", "patientId", "medications"]
+}
