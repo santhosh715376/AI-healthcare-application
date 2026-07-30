@@ -5,20 +5,48 @@
   "properties": {
     "id": { "type": "string" },
     "patientId": { "type": "string" },
-    "doctorName": { "type": "string" },
-    "date": { "type": "string" },
-    "medications": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "name": { "type": "string" },
-          "dosage": { "type": "string" },
-          "frequency": { "type": "string" }
-        },
-        "required": ["name", "dosage"]
+    "source": { 
+      "type": "string", 
+      "enum": ["doctor_voice", "doctor_ocr", "patient_ocr"] 
+    },
+    "header": {
+      "type": "object",
+      "properties": {
+        "doctorName": { "type": "string" },
+        "hospitalName": { "type": "string" },
+        "opdContact": { "type": "string" },
+        "date": { "type": "string" }
+      },
+      "required": ["doctorName", "hospitalName", "date"]
+    },
+    "body": {
+      "type": "object",
+      "properties": {
+        "recordedDiagnosis": { "type": "string" },
+        "medications": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "dosage": { "type": "string" },
+              "frequency": { "type": "string" },
+              "duration": { "type": "string" },
+              "foodRelation": { "type": "string" }
+            },
+            "required": ["name", "dosage"]
+          }
+        }
+      },
+      "required": ["medications"]
+    },
+    "tail": {
+      "type": "object",
+      "properties": {
+        "advice": { "type": "string" },
+        "followUpDate": { "type": "string" }
       }
     }
   },
-  "required": ["id", "patientId", "medications"]
+  "required": ["id", "patientId", "source", "header", "body"]
 }

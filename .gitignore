@@ -2,11 +2,25 @@
 venv/
 .venv/
 agents/venv/
+ocr_engine/ocr_venv/
+
+# Environment Variables & Secrets
+.env
+*.env
+!.env.example
 
 # Node dependencies
 node_modules/
+frontend/node_modules/
+health_care/node_modules/
 dist/
 build/
+
+# SQLite Database Files
+*.db
+*.sqlite
+*.sqlite3
+agents/healthcare.db
 
 # Python cache & build outputs
 __pycache__/
@@ -20,3 +34,7 @@ __pycache__/
 Thumbs.db
 .vscode/
 .idea/
+
+# Scratch & Temporary Logs
+scratch/
+*.log

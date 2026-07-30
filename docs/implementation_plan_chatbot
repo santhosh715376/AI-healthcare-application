@@ -1,0 +1,223 @@
+# Implementation Plan: Prescription Timeline Panel + Chatbot-Timeline Agentic RAG (Revised)
+
+---
+
+## 1. LLM Decision
+
+| Role | Model | Reason |
+|---|---|---|
+| **Timeline Context Agent** | Groq Llama 3.3 70B | Fast, already integrated, handles structured JSON context, no quota risk |
+| **Chat Conversation** | Groq Llama 3.3 70B | Same session, same API key, consistent |
+| **Vision OCR** | Gemini 2.0 Flash | Irreplaceable for image understanding — stays scoped here only |
+
+---
+
+## 2. Data Flow (Source → Timeline)
+
+```
+STT / OCR → Doctor clicks "🏥 Confirm & Save to Patient Timeline Record"
+   ↓
+POST /api/timeline/save  (sends full Header-Body-Tail JSON + source)
+   ↓
+Backend: Groq Llama 3.3 70B generates a narrative VISIT SUMMARY sentence
+   ↓
+Stored in in-memory timeline store (Phase 1, per patientId)
+   ↓
+Timeline Tab (Tab 5) fetches GET /api/timeline/{patient_id} and renders cards
+```
+
+---
+
+## 3. Visit Summary Format (Revised — User Feedback Applied)
+
+The summary is a **natural language narrative sentence** that describes the visit event, NOT a compact dash-separated medication string.
+
+**Format:**
+> `"Patient visited CHC Nemmara and was examined by Dr. Nithin Narayanan. Diagnosed with URTI on 20 Sep 2022."`
+
+Medications are **NOT** in the summary. They are rendered in a real-world prescription table format on the card body.
+
+---
+
+## 4. Updated Data Contract
+
+```json
+{
+  "patientId": "pat-1001",
+  "prescriptions": [
+    {
+      "id": "rx-001",
+      "date": "2022-09-20",
+      "time": "10:30",
+      "index": 1,
+      "visitSummary": "Patient visited CHC Nemmara and was examined by Dr. Nithin Narayanan. Diagnosed with URTI.",
+      "source": "doctor_voice | patient_ocr",
+      "header": {
+        "doctorName": "Dr. Nithin Narayanan",
+        "hospitalName": "CHC Nemmara",
+        "opdContact": "Ph: 8086093168",
+        "date": "2022-09-20"
+      },
+      "body": {
+        "recordedDiagnosis": "URTI",
+        "medications": [
+          { "name": "Syp Calpol", "dosage": "250/5 4ml", "frequency": "1-1-1", "duration": "3 days", "foodRelation": "After Food" },
+          { "name": "Syp Delcon", "dosage": "3ml", "frequency": "1-1-1", "duration": "5 days", "foodRelation": "After Food" },
+          { "name": "Syp Levolin", "dosage": "3ml", "frequency": "1-1-1", "duration": "5 days", "foodRelation": "After Food" },
+          { "name": "Syp Meftal-P", "dosage": "100/5 3ml", "frequency": "SOS", "duration": "", "foodRelation": "" }
+        ]
+      },
+      "tail": {
+        "advice": "Rest and hydrate well.",
+        "followUpDate": "In 5 days"
+      }
+    }
+  ]
+}
+```
+
+---
+
+## 5. Timeline Panel Layout (Confirmed Good — User Approved)
+
+```
+┌──────────────────────────────────────────────────────┬──────┐
+│  LEFT PANEL (scrollable)                             │ RAIL │
+│                                                      │      │
+│  ┌────────────────────────────────────────────────┐  │  ─   │
+│  │  10:30 – 20 Sep 2022                           │  │  ●  ← active
+│  │  CHC Nemmara · Ph: 8086093168                  │  │  ─   │
+│  │  Dr. Nithin Narayanan                          │  │      │
+│  │  ──────────────────────────────────────────── │  │  ─   │
+│  │  Patient visited CHC Nemmara and was examined  │  │      │
+│  │  by Dr. Nithin Narayanan. Diagnosed with URTI. │  │      │
+│  │  ──────────────────────────────────────────── │  │      │
+│  │  MEDICINE          DOSAGE     FREQ    DURATION │  │      │
+│  │  Syp Calpol        4ml       1-1-1    3 days   │  │      │
+│  │  Syp Delcon        3ml       1-1-1    5 days   │  │      │
+│  │  Syp Levolin       3ml       1-1-1    5 days   │  │      │
+│  │  Syp Meftal-P      3ml       SOS      —        │  │      │
+│  │  ──────────────────────────────────────────── │  │      │
+│  │  Advice: Rest and hydrate. Follow-up in 5 days │  │      │
+│  └────────────────────────────────────────────────┘  │  ─   │
+│                  │ (vertical line connector)          │      │
+│  ┌────────────────────────────────────────────────┐  │  ─   │
+│  │  14:00 – 15 Jun 2022 · Entry #02               │  │      │
+│  │  ...                                           │  │  ─   │
+│  └────────────────────────────────────────────────┘  │      │
+└──────────────────────────────────────────────────────┴──────┘
+```
+
+### Right Rail Tick Behavior
+
+| State | Visual | Behavior |
+|---|---|---|
+| `default` | Short horizontal line | Static |
+| `active` | Filled dot/circle | Marks card in viewport |
+| `hover` | No change to tick | Floating popup: compact entry preview (date, hospital, diagnosis) |
+| `click` | Becomes active | Scrolls left panel to that card |
+
+**Sync rule:** Left panel scroll → IntersectionObserver → updates active tick.
+
+### Compact View (User confirmed ✅)
+```
+  10:30 – 20 Sep 2022 – Entry #01
+  14:00 – 15 Jun 2022 – Entry #02
+  09:15 – 02 May 2022 – Entry #03
+```
+Tick rail stays unchanged in compact view.
+
+---
+
+## 6. Agentic Layer — Context Agents for Chatbot
+
+Instead of raw string injection, a **Context Agent** fetches and structures the timeline data into a rich, LLM-readable context block before each chatbot session.
+
+### Proposed Agents
+
+| Agent | Purpose |
+|---|---|
+| **Timeline Context Agent** | Fetches the patient's last N prescriptions from the timeline store. Formats them into a clean, structured natural-language context block for Groq. Passes it as an enriched system prompt injection. |
+| **Wellbeing State Agent** | Reads the most recent diagnosis and prescription dates. Determines if patient is likely within active treatment window. Generates a wellbeing-awareness context line (e.g., "Patient is within Day 3 of a 5-day URTI treatment course"). |
+| **Medication Schedule Agent** *(Phase 2)* | Reads medication frequency codes (1-1-1, TDS, SOS). Generates per-day expected dose schedule. Used for adherence tracking. |
+| **Adherence Agent** *(Phase 2)* | Compares expected dose schedule vs. patient-confirmed taken doses. Generates an adherence summary for chatbot proactive alerts. |
+
+### Phase 1 Agents (this sprint)
+- **Timeline Context Agent** ✅ — builds enriched context
+- **Wellbeing State Agent** ✅ — generates awareness line
+
+### Example Context Block Passed to Groq (Agent Output)
+
+```
+[PATIENT HEALTH CONTEXT — DO NOT INVENT — READ ONLY]
+Generated by: Timeline Context Agent + Wellbeing State Agent
+
+Most Recent Visit:
+  Date: 20 Sep 2022
+  Hospital: CHC Nemmara (Ph: 8086093168)
+  Doctor: Dr. Nithin Narayanan
+  Diagnosis: URTI
+  Treatment: 3–5 day course of Calpol, Delcon, Levolin, Meftal-P
+  Status: Patient is within active treatment window.
+
+Use this context ONLY if the patient asks about their visit, medications, or health status.
+Never diagnose. Never modify the context. Never infer conditions not listed.
+```
+
+---
+
+## 7. Chatbot Wellbeing Greeting (Revised — User Feedback Applied)
+
+The chatbot does **NOT** announce the prescription details. It simply opens with:
+
+> `"How are you feeling today?"`
+
+Immediately below, the **UI** (not the LLM) renders a read-only health status card fetched from the timeline:
+
+```
+┌──────────────────────────────────────────┐
+│  📋 Your Recent Health Status            │
+│  Visited CHC Nemmara on 20 Sep 2022      │
+│  Diagnosed with: URTI                    │
+│  Prescribed by: Dr. Nithin Narayanan     │
+│  Active treatment: Day 3 of 5 days       │
+└──────────────────────────────────────────┘
+```
+
+The LLM uses the injected context to answer follow-up questions accurately, but the greeting stays minimal and human.
+
+---
+
+## 8. Files to Create / Modify
+
+### Backend
+
+| File | Action | Description |
+|---|---|---|
+| `agents/graphs/timeline.py` | **[NEW]** | `save_prescription()`, `get_timeline()`, Groq narrative summary generator |
+| `agents/graphs/context_agent.py` | **[NEW]** | Timeline Context Agent + Wellbeing State Agent — builds enriched system prompt context block |
+| `agents/server.py` | **[MODIFY]** | `POST /api/timeline/save`, `GET /api/timeline/{patient_id}`, `GET /api/timeline/context/{patient_id}` |
+
+### Frontend
+
+| File | Action | Description |
+|---|---|---|
+| `health_care/src/pages/TimelinePage.jsx` | **[NEW]** | Full timeline page — left scrollable panel + right tick rail + Expanded/Compact toggle |
+| `health_care/src/components/PrescriptionTimelineCard.jsx` | **[NEW]** | Individual prescription card — narrative summary + real-world prescription table + connector line |
+| `health_care/src/components/TickRail.jsx` | **[NEW]** | Right rail — tick list, IntersectionObserver sync, hover popup, click-scroll |
+| `health_care/src/pages/ChatPage.jsx` | **[MODIFY]** | On mount: fetch timeline context → inject into Groq session → greet with "How are you feeling today?" + render health status card |
+| `health_care/src/pages/CapturePage.jsx` | **[MODIFY]** | Add Tab 5 "📋 Patient Timeline" |
+| `health_care/src/index.css` | **[MODIFY]** | Timeline card, vertical connector, tick rail, hover popup CSS |
+
+---
+
+## 9. Answered Open Questions (from previous plan)
+
+| Question | Answer |
+|---|---|
+| Timeline persistence | In-memory dict — confirmed OK for Phase 1 |
+| Sort order | Newest-first (descending) |
+| Patient ID | Hardcoded `pat-1001` for Phase 1 |
+| Chatbot greeting | Just `"How are you feeling today?"` + health card UI (NOT LLM-spoken) |
+| Default view | Expanded view on load |
+| Gemini vs Groq for agent | **Groq** — faster, already integrated, no quota risk, Gemini stays scoped to Vision OCR |
