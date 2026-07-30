@@ -1,40 +1,78 @@
-# Virtual environments
+# ============================================================
+# AI Healthcare Application — .gitignore
+# ============================================================
+
+# ─── Python Virtual Environments ────────────────────────────
 venv/
 .venv/
+env/
+ENV/
 agents/venv/
 ocr_engine/ocr_venv/
+**/venv/
+**/.venv/
 
-# Environment Variables & Secrets
+# ─── Environment Variables & Secrets ─────────────────────────
 .env
 *.env
+.env.local
+.env.development
+.env.production
 !.env.example
 
-# Node dependencies
+# ─── Python Cache & Build Outputs ────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# ─── Node / Frontend ──────────────────────────────────────────
 node_modules/
 frontend/node_modules/
 health_care/node_modules/
-dist/
-build/
+frontend/dist/
+health_care/dist/
+.vite/
 
-# SQLite Database Files
+# ─── SQLite Database Files (contain patient PII) ─────────────
 *.db
 *.sqlite
 *.sqlite3
+healthcare.db
 agents/healthcare.db
+healthcare.db-shm
+healthcare.db-wal
 
-# Python cache & build outputs
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-.pytest_cache/
+# ─── Logs ────────────────────────────────────────────────────
+*.log
+logs/
 
-# OS / IDE metadata
+# ─── Scratch & Temporary Files ───────────────────────────────
+scratch/
+
+# ─── OS / IDE Metadata ───────────────────────────────────────
 .DS_Store
 Thumbs.db
 .vscode/
 .idea/
+*.swp
+*.swo
+*~
 
-# Scratch & Temporary Logs
-scratch/
-*.log
+# ─── Jupyter ──────────────────────────────────────────────────
+.ipynb_checkpoints/
+*.ipynb
+
+# ─── Coverage & Test Reports ─────────────────────────────────
+htmlcov/
+.coverage
+coverage.xml
+*.cover

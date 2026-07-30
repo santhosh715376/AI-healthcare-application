@@ -77,25 +77,23 @@ export default function EmergencyFilterPane({
           borderRadius: '8px'
         }}>
           <span style={{ fontSize: '0.8rem', fontWeight: 600, color: locationEnabled ? '#34d399' : '#fbbf24' }}>
-            {locationEnabled ? '🔵 GPS Location Lock Active' : '📍 Enable GPS for live distance'}
+            {locationEnabled ? '🔵 Real-Time GPS Active' : '📍 Enable GPS for live distance'}
           </span>
-          {!locationEnabled && (
-            <button
-              onClick={onRequestLocation}
-              style={{
-                backgroundColor: '#f59e0b',
-                color: '#111827',
-                border: 'none',
-                padding: '4px 10px',
-                borderRadius: '6px',
-                fontSize: '0.78rem',
-                fontWeight: 700,
-                cursor: 'pointer'
-              }}
-            >
-              Turn On Location
-            </button>
-          )}
+          <button
+            onClick={onRequestLocation}
+            style={{
+              backgroundColor: locationEnabled ? '#10b981' : '#f59e0b',
+              color: '#111827',
+              border: 'none',
+              padding: '4px 10px',
+              borderRadius: '6px',
+              fontSize: '0.78rem',
+              fontWeight: 700,
+              cursor: 'pointer'
+            }}
+          >
+            {locationEnabled ? '🎯 Refresh GPS' : 'Turn On Location'}
+          </button>
         </div>
 
         {/* Radius Resizing Slider */}

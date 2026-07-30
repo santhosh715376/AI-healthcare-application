@@ -4,11 +4,12 @@ import ChatPage from './ChatPage.jsx';
 import TimelinePage from './TimelinePage.jsx';
 import HospitalMap from '../components/HospitalMap.jsx';
 import EmergencyFilterPane from '../components/EmergencyFilterPane.jsx';
+import PatientAdherencePanel from '../components/PatientAdherencePanel.jsx';
 
-export default function PatientPortal({ currentUser }) {
+export default function PatientPortal({ currentUser, onSignOut }) {
   const patientMobile = currentUser?.phone || '9876543210';
   const patientId = currentUser?.id || '100001';
-  const [activeSubTab, setActiveSubTab] = useState('ocr'); // 'ocr' | 'chat' | 'timeline' | 'mapping'
+  const [activeSubTab, setActiveSubTab] = useState('adherence'); // 'adherence' | 'ocr' | 'chat' | 'timeline' | 'mapping'
 
   // OCR Upload State
   const [selectedFile, setSelectedFile] = useState(null);
@@ -28,20 +29,25 @@ export default function PatientPortal({ currentUser }) {
 
   const cardRefs = useRef({});
 
-  // Request Browser Geolocation
+  // Request Real-Time Continuous Browser Geolocation
   const requestLocation = () => {
     if ('geolocation' in navigator) {
-      navigator.geolocation.getCurrentPosition(
+      const watchId = navigator.geolocation.watchPosition(
         (pos) => {
           setUserLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude });
           setLocationEnabled(true);
         },
         (err) => {
-          console.warn('Geolocation access denied or unavailable:', err);
-          setLocationEnabled(false);
+          console.warn('Geolocation access denied or unavailable, using Coimbatore fallback:', err);
+          setUserLocation({ lat: 11.0168, lng: 76.9558 });
+          setLocationEnabled(true);
         },
-        { enableHighAccuracy: true, timeout: 10000 }
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
       );
+      return () => navigator.geolocation.clearWatch(watchId);
+    } else {
+      setUserLocation({ lat: 11.0168, lng: 76.9558 });
+      setLocationEnabled(true);
     }
   };
 
@@ -140,7 +146,7 @@ export default function PatientPortal({ currentUser }) {
   };
 
   return (
-    <div className="patient-portal-container" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+    <div className="patient-portal-container" style={{ display: 'flex', flexDirection: 'column', height: '100%', overflowY: 'auto' }}>
       {/* Sub-tab Navigation */}
       <div style={{
         display: 'flex',
@@ -168,12 +174,23 @@ export default function PatientPortal({ currentUser }) {
           📋 My Medical Records Timeline
         </button>
         <button
+          className={`tab-btn ${activeSubTab === 'adherence' ? 'active' : ''}`}
+          onClick={() => setActiveSubTab('adherence')}
+        >
+          📊 Adherence & Profile Vitals
+        </button>
+        <button
           className={`tab-btn ${activeSubTab === 'mapping' ? 'active' : ''}`}
           onClick={() => setActiveSubTab('mapping')}
         >
           🗺️ Mapping
         </button>
       </div>
+
+      {/* SUB-TAB 0: Patient Adherence & Profile Vitals Panel */}
+      {activeSubTab === 'adherence' && (
+        <PatientAdherencePanel user={currentUser} onSignOut={onSignOut} />
+      )}
 
       {/* SUB-TAB 1: OCR Ingestion */}
       {activeSubTab === 'ocr' && (
@@ -267,7 +284,7 @@ export default function PatientPortal({ currentUser }) {
       )}
 
       {/* SUB-TAB 2: Consumer Health Chatbot */}
-      {activeSubTab === 'chat' && <ChatPage />}
+      {activeSubTab === 'chat' && <ChatPage currentUser={currentUser} />}
 
       {/* SUB-TAB 3: Patient Medical History Timeline */}
       {activeSubTab === 'timeline' && <TimelinePage patientId={patientMobile} />}

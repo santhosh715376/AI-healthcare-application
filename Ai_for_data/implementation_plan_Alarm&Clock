@@ -1,0 +1,139 @@
+# Implementation Plan: Alarm & Clock Integration Engine
+
+## 1. Alarm & Clock Engine Architecture: Where & How It Is Used
+
+[Certain] The Alarm and Clock engine is the active trigger mechanism for the entire adherence pipeline. It operates across **3 distinct clock layers** to guarantee notifications trigger on time:
+
+```text
+ ┌──────────────────────────────────────────────────────────────────────────────────────────┐
+ │                               3-LAYER ALARM & CLOCK ENGINE                               │
+ ├──────────────────────────────────────────────────────────────────────────────────────────┤
+ │                                                                                          │
+ │  ┌────────────────────────────────────────────────────────────────────────────────────┐  │
+ │  │ LAYER 1: LIVE FRONTEND CLOCK TICKER (`frontend/src/components/AdherenceClock.jsx`) │  │
+ │  │ • 1-Second ticker comparing local device clock against scheduled slot windows     │  │
+ │  │ • Fires T-30m pre-reminder banner and T+15m soft check-in modal                     │  │
+ │  └────────────────────────────────────────┬───────────────────────────────────────────┘  │
+ │                                           │                                              │
+ │                                           ▼                                              │
+ │  ┌────────────────────────────────────────────────────────────────────────────────────┐  │
+ │  │ LAYER 2: HTML5 WEB AUDIO ALARM SYNTHESIZER (`frontend/src/utils/audioAlarm.js`)    │  │
+ │  │ • Uses Web Audio API (`AudioContext`) to synthesize real-time medical alarm chimes │  │
+ │  │ • Pre-Reminder: Soft 2-tone chime (19:30 for 20:00 slot)                            │  │
+ │  │ • Overdue Alarm: Pulsing urgent 3-beep alarm chime (20:15 & 20:30 if unverified)  │  │
+ │  └────────────────────────────────────────┬───────────────────────────────────────────┘  │
+ │                                           │                                              │
+ │                                           ▼                                              │
+ │  ┌────────────────────────────────────────────────────────────────────────────────────┐  │
+ │  │ LAYER 3: BACKEND APSCHEDULER CLOCK WORKER (`agents/scheduler.py`)                  │  │
+ │  │ • Python background thread polling `adherence_logs` every 60 seconds              │  │
+ │  │ • Handles background Web Push Notifications & Twilio SMS/WhatsApp Missed Alert     │  │
+ │  └────────────────────────────────────────────────────────────────────────────────────┘  │
+ └──────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 2. Why Web Alarm Audio Alone Is Not Enough (The Browser Sandbox Problem)
+
+| Clock Mechanism | Active Tab (Tab Open) | Inactive Tab (Tab Backgrounded) | Closed Tab / Locked Phone | Solution / Fallback |
+|---|---|---|---|---|
+| **HTML5 Web Audio API Alarm** | ✅ **Plays Instant Audio Ringtone** | ⚠️ Muted by browser power-saving | ❌ Killed by OS process reaper | Pair with Layer 3 (iCal Sync & Twilio SMS) |
+| **Frontend `setInterval` Ticker** | ✅ **Executes Every 1 Second** | ⚠️ Throttled to 1 min by browser | ❌ Stopped completely | Use Service Worker `sw.js` for Web Push |
+| **Native iCal / Google Calendar** | ✅ **Fires Native Phone Alarm** | ✅ **Fires Native Phone Alarm** | ✅ **Fires Native Phone Alarm** | 1-Click `📅 Add to Calendar` Export |
+| **Backend APScheduler Worker** | ✅ **Fires SMS / Push** | ✅ **Fires SMS / Push** | ✅ **Fires SMS / Push** | Python `APScheduler` polling DB |
+
+---
+
+## 3. High-Level Design (HLD) with Explicit Clock & Alarm Layer
+
+```text
+  [Prescription Saved in DB] ──► [Adherence Schedule Generator]
+                                         │
+                                         ▼
+                 ┌───────────────────────────────────────────────┐
+                 │ PATIENT CONFIGURATOR                          │
+                 │ Sets Slot Windows (e.g. Night: 20:00 - 20:30) │
+                 └───────────────────────┬───────────────────────┘
+                                         │
+                   ┌─────────────────────┴─────────────────────┐
+                   ▼                                           ▼
+  ┌─────────────────────────────────┐         ┌─────────────────────────────────┐
+  │ FRONTEND REAL-TIME CLOCK & ALARM│         │ BACKEND APSCHEDULER CLOCK POLLER│
+  ├─────────────────────────────────┤         ├─────────────────────────────────┤
+  │ • Live 1s Clock Ticker          │         │ • 60s Database Polling Loop     │
+  │ • HTML5 Audio Alarm Synthesizer │         │ • Web Push Notification Trigger │
+  │   - 19:30: Soft Pre-Chime       │         │ • 20:30: Twilio WhatsApp Alert  │
+  │   - 20:15: Overdue Pulse Alarm  │         │   for MISSED Doses              │
+  └────────────────┬────────────────┘         └────────────────┬────────────────┘
+                   │                                           │
+                   └─────────────────────┬─────────────────────┘
+                                         │
+                                         ▼
+  ┌──────────────────────────────────────────────────────────────────────────────────────────┐
+  │ PATIENT TIMELINE VIEW (`TimelinePage.jsx`)                                                │
+  │ • Composite Circular SVG Recovery Ring (73% Overall Recovery)                            │
+  │ • Granular Per-Drug Progress Bars + Interactive Check-In Buttons                         │
+  └──────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 4. Code Implementation (`frontend/src/utils/audioAlarm.js` & `AdherenceClock.jsx`)
+
+```javascript
+// HTML5 Web Audio API Alarm Synthesizer (`frontend/src/utils/audioAlarm.js`)
+
+let audioCtx = None;
+
+export function playMedicalAlarm(type = 'DUE') {
+  try {
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+
+    if (type === 'PRE_REMINDER') {
+      // Soft 2-tone pre-reminder chime (523Hz C5 -> 659Hz E5)
+      osc.frequency.setValueAtTime(523.25, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(659.25, audioCtx.currentTime + 0.3);
+      gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.5);
+    } else {
+      // Urgent overdue medical alarm (3 pulsing beeps at 880Hz A5)
+      const now = audioCtx.currentTime;
+      for (let i = 0; i < 3; i++) {
+        const toneOsc = audioCtx.createOscillator();
+        const toneGain = audioCtx.createGain();
+        toneOsc.type = 'sine';
+        toneOsc.frequency.setValueAtTime(880, now + (i * 0.25));
+        toneGain.gain.setValueAtTime(0.3, now + (i * 0.25));
+        toneGain.gain.exponentialRampToValueAtTime(0.01, now + (i * 0.25) + 0.15);
+        toneOsc.connect(toneGain);
+        toneGain.connect(audioCtx.destination);
+        toneOsc.start(now + (i * 0.25));
+        toneOsc.stop(now + (i * 0.25) + 0.15);
+      }
+    }
+  } catch (e) {
+    console.warn("Web Audio API not supported or blocked by user gesture policy:", e);
+  }
+}
+```
+
+---
+
+## 5. Verification Plan
+
+### Automated Verification
+1. `python scratch/test_full_adherence_clock.py`: Verify multi-medicine schedule creation, 60s backend scheduler poller execution, T-30m/T+15m/T+30m alarm trigger payloads, and composite recovery progress ring calculations.
+
+---
+
+Review this updated Master Implementation Plan artifact and click **Proceed** (or reply to confirm) so I can implement the HTML5 Web Audio Alarm player, the `AdherenceClock.jsx` live ticker, and the Python backend scheduler poller.

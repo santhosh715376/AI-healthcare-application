@@ -1,0 +1,99 @@
+# Master Implementation Plan: 4 Autonomous Agents & Comprehensive Guardrails Setup
+
+## 1. Verbatim Agent Specifications & UI Integration
+
+[Certain] Here are the exact specifications, triggers, and workflows for all 4 autonomous agents:
+
+### 1. Proactive Adherence Guardian Agent ([`agents/graphs/guardian_agent.py`](file:///d:/health_care/agents/graphs/guardian_agent.py))
+- **Verbatim Storyline:** Monitors SQLite `adherence_logs`. If a patient misses 2 consecutive dose windows, the agent autonomously triggers an AI intervention: *"Hi Ram, we noticed you missed your evening dose. Are you feeling nauseous or experiencing side effects?"*.
+- **UI Trigger:** Interactive Floating Banner & Chat Intervention in [`ChatPage.jsx`](file:///d:/health_care/frontend/src/pages/ChatPage.jsx).
+- **Backend Mechanics:** Background event worker queries `adherence_logs` for `status == 'MISSED'` across the last 3 scheduled slots.
+
+### 2. Food & Drug Interaction Safety Agent ([`agents/graphs/safety_agent.py`](file:///d:/health_care/agents/graphs/safety_agent.py))
+- **Verbatim Storyline:** When a paper slip is scanned via OCR, this agent cross-checks new medications against existing timeline records in SQLite, flagging interaction risks (e.g. NSAID + Anticoagulants or antacid spacing).
+- **UI Trigger:** High-Priority Warning Card in OCR Verification & Timeline Cards.
+- **Backend Mechanics:** Intercepts `medications` array from `parse_prescription_image_gemini` and queries active `PrescriptionDB` records in `healthcare.db`.
+
+### 3. Dynamic Routine Optimizer Agent ([`agents/graphs/optimizer_agent.py`](file:///d:/health_care/agents/graphs/optimizer_agent.py))
+- **Verbatim Storyline:** Learns the patient's real-world check-in timestamp patterns over 14 days and suggests optimal schedule adjustments aligned with their actual sleep/meal habits.
+- **UI Trigger:** "Smart Schedule Suggestion" card in [`PatientAdherencePanel.jsx`](file:///d:/health_care/frontend/src/components/PatientAdherencePanel.jsx).
+- **Backend Mechanics:** Calculates 14-day mean Gaussian offset between actual check-in timestamps and `slot_start_time`.
+
+### 4. 24/7 Emergency Escort & Triage Agent ([`agents/graphs/emergency_agent.py`](file:///d:/health_care/agents/graphs/emergency_agent.py))
+- **Verbatim Storyline:** Connects chatbot symptom escalations to factual hospital ranking (`/api/hospitals`), calculating travel times to nearby ER facilities (KMCH, Ganga Hospital) with 1-click dispatch.
+- **UI Trigger:** Emergency Red Dispatch Pane in Chatbot & Emergency Filter Pane.
+- **Backend Mechanics:** Groq Llama 3.1 8B Instant classifier + spatial Haversine distance calculator.
+
+---
+
+## 2. Comprehensive System Guardrails Setup
+
+Our system implements a **4-Tier Safety Guardrail Architecture**:
+
+```text
+ ┌──────────────────────────────────────────────────────────────────────────────────────────┐
+ │                                 SYSTEM GUARDRAILS SETUP                                  │
+ ├──────────────────────────────────────────────────────────────────────────────────────────┤
+ │                                                                                          │
+ │ 1. DOSAGE ALTERATION SAFETY GUARDRAIL (`context_agent.py`):                              │
+ │    • Const: `GUARDRAIL_DISCLAIMER`                                                       │
+ │    • Intercepts unsafe user requests (e.g. "double dose", "increase pills", "stop med")  │
+ │    • Hard Stop: "I cannot alter your prescribed medication dosage. Please consult        │
+ │      Dr. Prescribing Doctor directly for any medication changes."                         │
+ │                                                                                          │
+ │ 2. EMERGENCY RED-FLAG TRIAGE GUARDRAIL (`chatbot.py` & `emergency_agent.py`):            │
+ │    • Intercepts severe symptoms (chest pain, breathlessness, heavy bleeding, stroke)     │
+ │    • Hard Stop: Immediately bypasses conversational chat and opens 24/7 ER Dispatch      │
+ │      with live Haversine travel time to KMCH / Ganga Hospital.                           │
+ │                                                                                          │
+ │ 3. NON-HALLUCINATION DIAGNOSIS GUARDRAIL (`prescription_parser.py`):                     │
+ │    • Pydantic Constraint: `"recordedDiagnosis": "Explicitly stated diagnosis ONLY."`     │
+ │    • Strictly forbids LLMs from inferring or inventing unstated medical conditions.       │
+ │                                                                                          │
+ │ 4. DATA ISOLATION & CONSENT GUARDRAIL (`database.py` & `ConsentGrantDB`):                │
+ │    • Enforces access scope (`full`, `meds_only`, `nothing`) before returning patient     │
+ │      timeline records to third-party doctors.                                            │
+ └──────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 3. High-Level Design (HLD) & Inter-Agent Router
+
+```text
+ User Prompt: "My chest feels squeezed and I skipped my morning tablets"
+                                     │
+                                     ▼
+ ┌──────────────────────────────────────────────────────────────────────────────────────────┐
+ │ 3-LAYER SEMANTIC INTENT ROUTER (`agents/graphs/router.py`)                               │
+ ├──────────────────────────────────────────────────────────────────────────────────────────┤
+ │ Layer 1: Fast-Path Command Filter (0ms)                                                  │
+ │ Layer 2: Semantic Vector Embedding Classifier (<20ms via Sentence-Transformers)          │
+ │ Layer 3: Groq Llama 3.1 8B Instant Evaluator (<120ms)                                   │
+ └───────────────────────────────────┬──────────────────────────────────────────────────────┘
+                                     │ Evaluates Intent Scores & Enforces Safety Guardrails
+            ┌────────────────────────┼────────────────────────┬────────────────────────┐
+            ▼                        ▼                        ▼                        ▼
+  ┌──────────────────┐     ┌──────────────────┐     ┌──────────────────┐     ┌──────────────────┐
+  │ 1. GUARDIAN      │     │ 2. SAFETY        │     │ 3. OPTIMIZER     │     │ 4. EMERGENCY     │
+  │    AGENT         │     │    AGENT         │     │    AGENT         │     │    ESCORT AGENT  │
+  └────────┬─────────┘     └────────┬─────────┘     └────────┬─────────┘     └────────┬─────────┘
+           │                        │                        │                        │
+           └────────────────────────┴───────────┬────────────┴────────────────────────┘
+                                                ▼
+ ┌──────────────────────────────────────────────────────────────────────────────────────────┐
+ │ GROUNDED SYNTHESIS ENGINE (SQLite WAL + ChromaDB Vector Store)                           │
+ └──────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 4. Verification Plan
+
+### Automated Verification
+1. `python scratch/test_guardrails_and_agents.py`: Test all 4 agents and 4 guardrail safety triggers. Verify 100% pass under 200ms SLA.
+2. `npm run build` in `frontend/`: Verify 0 compilation errors.
+
+---
+
+Review this Master Implementation Plan artifact. **No code will be edited until you explicitly reply to approve this plan.**

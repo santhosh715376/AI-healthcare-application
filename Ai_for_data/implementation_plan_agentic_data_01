@@ -1,0 +1,165 @@
+# Master Implementation Plan: Agentic Data Architecture & Agentic Workflows
+
+## 1. Data Layer Review: What Was Implemented, Why, & Improvisations
+
+### What Was Implemented & Why:
+1. **SQLite WAL Mode Engine (`agents/database.py`):**
+   - *Why:* Enforces non-blocking concurrent reads and writes (`PRAGMA journal_mode = WAL; PRAGMA busy_timeout = 5000;`), eliminating `sqlite3.OperationalError: database is locked`.
+2. **`DoctorDB` Table:**
+   - *Why:* Stores `specialty` (`General Medicine`, `Cardiology`, etc.), NMC license ID (`doc_license`), and 10-digit `BIGINT` phone + `country_code` validation.
+3. **`PatientDB` Table:**
+   - *Why:* Enforces 10-digit integer constraint with decoupled `country_code` (+91) to prevent TRAI phone number recycling security exploits.
+4. **`DependentDB` Table:**
+   - *Why:* Enables single-phone accounts (e.g. father's mobile) to manage distinct linear visit histories for children (`son`), parents (`mother`), and spouses without record collision.
+5. **`ConsentGrantDB` Table:**
+   - *Why:* Enforces per-appointment privacy (`full`, `meds_only`, `nothing`) so doctors only access records authorized by the patient.
+6. **`PrescriptionDB` Table:**
+   - *Why:* Operates as an immutable single-ledger consultation record linked to `patient_id`, `doctor_id`, and `dependent_id` with `source` provenance tracking (`doctor_voice`, `doctor_ocr`, `patient_ocr`).
+7. **`HospitalDB` Table:**
+   - *Why:* Seeds Coimbatore district hospital metadata with `category`, `specialties`, and `facilities_json` for ranking agents.
+
+### Data Layer Improvisations (How to Upgrade Further):
+- **Improvisation 1: Vector Embeddings Table (`prescription_embeddings`):** Add a vector storage table (or ChromaDB integration) for semantic RAG search across past recorded diagnoses and openFDA drug facts.
+- **Improvisation 2: Immutable Consent Audit Log (`consent_audit_logs`):** Add a cryptographic timestamp table recording every time a doctor views a patient's record to satisfy strict DPDP Act 2025 compliance.
+
+---
+
+## 2. Agent Roster: The 3 Real Agentic Pillars vs. Non-AI Components
+
+[Certain] Not everything in this platform is an LLM. Using non-AI algorithms where math is superior is a feature, not a gap.
+
+### The 3 Real Agentic Components (Pitch Core):
+1. **Agent 1: Voice/NLP Prescription Parsing Agent (`agents/graphs/prescription_parser.py`)**
+   - *Engine:* Groq LLM (`llama-3.3-70b-versatile`)
+   - *Role:* Transforms unstructured speech/text streams into a validated 3-section Header-Body-Tail JSON (`medications`, `dietary_advice`, `recorded_diagnosis`, `follow_up_date`).
+2. **Agent 2: Specialty Suggestion Agent (`agents/graphs/specialty_suggestion.py`)**
+   - *Engine:* Groq LLM (`llama-3.3-70b-versatile` / `llama-3.1-8b-instant`)
+   - *Role:* Maps free-text patient symptom descriptions (e.g., *"severe chest pain and left arm numbness"*) to verified hospital specialty tags (`Cardiology`, `Trauma`) **without diagnosing disease**.
+3. **Agent 3: Hospital Ranking Agent (`agents/graphs/hospital_ranking.py`)**
+   - *Engine:* Groq LLM (`llama-3.3-70b-versatile`)
+   - *Role:* Evaluates candidate hospital metadata against user GPS coordinates, 24/7 ER status, bed counts, and priority weights to produce a 1-line reasoned shortlist.
+
+### Supporting / Auxiliary Agents & Non-AI Engines:
+- **Handwritten Slip Vision OCR Agent (`ocr_engine/main.py`):** Gemini 2.0 Flash Vision (Multimodal CV fallback).
+- **Patient Greeting & Context Agent (`agents/graphs/context_agent.py`):** Structured DB check-in agent.
+- **Drug-Info Chatbot (`agents/graphs/drug_info_rag.py`):** OpenFDA RAG retriever (Stretch).
+- **Geospatial Distance Calculator (`backend-and-mapping/src/services/geoDistance.js`):** **Pure Haversine Math (Explicitly NOT AI)**.
+
+---
+
+## 3. High-Level Design (HLD)
+
+```text
+ ┌─────────────────────────────────────────────────────────────────────────────────────────────────┐
+ │                                   REACT FRONTEND (Vite / React 18)                              │
+ ├────────────────────────────────────────────────┬────────────────────────────────────────────────┤
+ │               👨‍⚕️ DOCTOR PORTAL                │                👤 PATIENT PORTAL               │
+ │ • Voice Push-To-Talk STT                       │ • Vision Paper Slip OCR                        │
+ │ • Dependent Profile Switcher                   │ • Cross-Doctor Timeline                        │
+ │ • OPD Exact Phone Search                       │ • Emergency Map & Specialty Triage             │
+ └───────────────────────┬────────────────────────┴────────────────────────┬───────────────────────┘
+                         │                                                 │
+                         │             REST API / JSON (HTTP)              │
+                         ▼                                                 ▼
+ ┌─────────────────────────────────────────────────────────────────────────────────────────────────┐
+ │                                  FASTAPI AI AGENT BACKEND SERVER                                │
+ ├─────────────────────────────────────────────────────────────────────────────────────────────────┤
+ │  [Auth & Security Module]     [Agentic Data & State Layer]     [Database Engine]                │
+ │  • Bcrypt & JWT               • `PrescriptionAgentState`       • SQLAlchemy ORM                 │
+ │  • BIGINT Phone Validation    • `SpecialtyAgentState`          • SQLite (`healthcare.db`)       │
+ │                               • `RankingAgentState`            • WAL Mode Concurrency           │
+ │                               • `ContextAgentState`                                             │
+ └───────────────────────┬────────────────────────┬────────────────────────┬───────────────────────┘
+                         │                        │                        │
+                         ▼                        ▼                        ▼
+ ┌───────────────────────────────┐ ┌───────────────────────────────┐ ┌───────────────────────────────┐
+ │        Groq LPU Cloud         │ │       Google Gemini Cloud     │ │    SQLite WAL Local Storage   │
+ │ • Whisper-large-v3 STT        │ │ • Gemini 2.0 Flash Vision     │ │ • `doctors` Table             │
+ │ • Llama-3.3-70b-versatile     │ │   (Handwritten OCR)           │ │ • `patients` Table            │
+ │ • Llama-3.1-8b-instant        │ │                               │ │ • `dependents` Table          │
+ │                               │ │                               │ │ • `consent_grants` Table      │
+ │                               │ │                               │ │ • `prescriptions` Ledger      │
+ │                               │ │                               │ │ • `hospitals` Table           │
+ └───────────────────────────────┘ └───────────────────────────────┘ └───────────────────────────────┘
+```
+
+---
+
+## 4. Low-Level Design (LLD) & Agentic State Definitions (`agents/state.py`)
+
+```python
+from typing import List, Dict, Optional, Any
+from typing_extensions import TypedDict
+
+class PrescriptionAgentState(TypedDict):
+    raw_transcript: str
+    ocr_image_path: Optional[str]
+    patient_id: int
+    doctor_id: Optional[int]
+    dependent_id: Optional[int]
+    source: str  # 'doctor_voice' | 'doctor_ocr' | 'patient_ocr'
+    recorded_diagnosis: Optional[str]
+    medications: List[Dict[str, Any]]
+    dietary_advice: Optional[Dict[str, Any]]
+    advice: Optional[str]
+    follow_up_date: Optional[str]
+    visit_summary: Optional[str]
+    is_valid: bool
+    error_message: Optional[str]
+
+class SpecialtyAgentState(TypedDict):
+    symptom_text: str
+    patient_location: Optional[Dict[str, float]]
+    suggested_specialties: List[str]
+    primary_tag: str
+    reasoning: str
+    confidence_score: float
+
+class RankingAgentState(TypedDict):
+    hospitals: List[Dict[str, Any]]
+    user_lat: float
+    user_lng: float
+    priority_weights: Dict[str, float]
+    ranked_hospitals: List[Dict[str, Any]]
+    reasoning_summary: str
+
+class ContextAgentState(TypedDict):
+    patient_phone: int
+    current_query: str
+    has_timeline: bool
+    patient_name: str
+    recent_doctor_name: Optional[str]
+    recent_visit_date: Optional[str]
+    recent_diagnosis: Optional[str]
+    recent_medications: List[Dict[str, Any]]
+    greeting_message: str
+    disclaimer_triggered: bool
+```
+
+---
+
+## 5. End-to-End Agent Workflows
+
+### Workflow 1: Voice Prescription Structuring Flow
+1. Doctor speaks into frontend microphone -> Web Speech API / Groq Whisper returns transcript.
+2. FastAPI passes transcript into `PrescriptionAgentState`.
+3. `prescription_parser.py` executes Groq Llama-3.3-70B with JSON schema constraints.
+4. Parsed result validates against `contracts/schemas/prescription.schema.json`.
+5. Inserted into SQLite `prescriptions` ledger.
+
+### Workflow 2: Specialty Triage & Ranking Agent Flow
+1. Patient enters symptom text: *"severe chest pain and left arm numbness"*.
+2. `specialty_suggestion.py` maps text to `["Cardiology", "Trauma"]`.
+3. Candidate hospitals queried from `HospitalDB` filtering by `specialties LIKE '%Cardiology%'`.
+4. `hospital_ranking.py` evaluates candidates using distance, bed count, 24/7 status, and returns a 1-line reasoned shortlist.
+
+---
+
+## 6. Verification Plan
+
+### Automated Verification
+1. `python scratch/test_agentic_state.py`: Instantiate all 4 state models in `agents/state.py`, run test executions through `prescription_parser.py`, `specialty_suggestion.py`, and `hospital_ranking.py`, and verify zero schema errors.
+
+---
+
+Review this Master Implementation Plan artifact and click **Proceed** (or reply to confirm) so I can implement `agents/state.py` and finalize the agent graphs.

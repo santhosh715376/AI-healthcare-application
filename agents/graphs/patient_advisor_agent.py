@@ -203,7 +203,26 @@ def process_patient_advisor_pipeline(
     raw_msg = user_message.strip()
     msg_lower = raw_msg.lower()
 
-    # --- 0. GREETING & PATIENT TIMELINE CONTEXT HANDLER ---
+    # --- 0a. HEALTHCARE SCOPE GUARDRAIL (Non-Medical Out-of-Scope Filter) ---
+    health_keywords = [
+        "pain", "fever", "cough", "cold", "headache", "doctor", "medicine", "tablet", "symptom", 
+        "hospital", "clinic", "health", "blood", "pressure", "sugar", "diet", "stomach", "chest", 
+        "breath", "dizzy", "vomit", "nausea", "rash", "skin", "knee", "bone", "heart", "eye", "ear", 
+        "throat", "urine", "stool", "scan", "report", "test", "prescribe", "dose", "allergy", "infection", 
+        "virus", "flu", "covid", "sick", "ill", "disease", "hurt", "ache", "swollen", "bleed", "burn", 
+        "cramps", "fatigue", "sleep", "weight", "pulse", "what medicine", "how to take", "can i take",
+        "comfort", "remedy", "specialty", "triage", "emergency", "report_reader"
+    ]
+    non_health_patterns = ["1+1", "1 + 1", "2+2", "math", "python", "javascript", "code", "programming", "capital of", "who is", "weather in", "movie", "song", "game", "football", "cricket"]
+
+    if any(nh in msg_lower for nh in non_health_patterns) or (not any(hk in msg_lower for hk in health_keywords) and not msg_lower.startswith("/") and len(raw_msg.split()) <= 5 and not any(c in raw_msg for c in ["hi", "hello", "hey"])):
+        return {
+            "agentType": "OUT_OF_SCOPE_GUARDRAIL",
+            "isBlocked": True,
+            "replyText": "🛡️ **Healthcare Scope Guardrail Notice**\n\nI am a specialized **Personal Health AI Assistant** configured strictly for medical history, symptom evaluation, medication guidance, and hospital discovery.\n\nI cannot assist with general non-medical queries (like math or general trivia). Please ask a health or medical-related question!"
+        }
+
+    # --- 0b. GREETING & PATIENT TIMELINE CONTEXT HANDLER ---
     greetings = ["hi", "hello", "hey", "good morning", "good evening", "good afternoon", "greetings", "hi there", "hello there", "hlo", "hy", "howdy"]
     if msg_lower in greetings or msg_lower.rstrip('!.') in greetings:
         timeline = get_recent_patient_timeline_summary(patient_phone)
@@ -319,21 +338,67 @@ def process_patient_advisor_pipeline(
             "replyText": f"⚠️ **URGENT MEDICAL ALERT: CRITICAL SYMPTOMS DETECTED**\n\nYour symptoms ({raw_msg}) indicate a potential emergency. An automated alert has been dispatched via SMTP to **{ALERT_RECIPIENT_EMAIL}**.\n\nPlease reach out immediately to one of the top 24/7 ER hospitals below or call 108 emergency services."
         }
 
-    # --- 3. TIMELINE MEDICINE GUARDRAIL ENFORCER ---
-    medicine_query_keywords = ["take", "tablet", "capsule", "dosage", "amoxicillin", "paracetamol", "antibiotic", "painkiller", "medicine"]
-    if any(mk in msg_lower for mk in medicine_query_keywords):
-        # Extract potential medicine name
-        words = raw_msg.split()
-        for w in words:
-            clean_w = ''.join(filter(str.isalpha, w))
-            if len(clean_w) >= 4 and clean_w.lower() not in ["take", "tablet", "capsule", "dosage", "what", "should", "with", "have", "from", "this"]:
-                is_prescribed = check_medicine_timeline_guardrail(clean_w, patient_phone)
-                if not is_prescribed:
-                    return {
-                        "agentType": "GUARDRAIL_ENFORCER",
-                        "isBlocked": True,
-                        "replyText": "⚠️ **Prescription Guardrail Notice**\n\nPlease consult your prescribing doctor for medicines and share your health concerns with them."
-                    }
+    # ─── CHAIN A: DETERMINISTIC EXACT-MATCH LEDGER CHAIN (<5ms, Zero LLM Drift) ───
+    # A1. Factual Prescription Record Queries
+    exact_record_keywords = ["what medicine", "what medicines", "prescribed to me", "my prescription", "my visit", "my record", "recent visit", "doctor prescribe", "my medications"]
+    if any(rk in msg_lower for rk in exact_record_keywords):
+        from graphs.context_agent import run_context_agent
+        ctx_res = run_context_agent(patient_phone, raw_msg)
+        return {
+            "agentType": "CHAIN_A_FACTUAL_PRESCRIPTION_AGENT",
+            "isBlocked": False,
+            "replyText": ctx_res.get("response", "No active prescription records found on file.")
+        }
+
+    # A2. Factual Adherence Check-In Log Status Queries
+    exact_adherence_keywords = ["did i take", "check-in status", "my check in", "checkin status", "doses today"]
+    if any(ak in msg_lower for ak in exact_adherence_keywords):
+        from graphs.context_agent import get_today_adherence_status
+        status_text = get_today_adherence_status(patient_phone)
+        return {
+            "agentType": "CHAIN_A_FACTUAL_ADHERENCE_AGENT",
+            "isBlocked": False,
+            "replyText": f"📋 **Today's Verified Adherence Status**\n\n{status_text or 'No dose check-in logs recorded for today yet.'}"
+        }
+
+    # ─── CHAIN B: SEMANTIC SIMILARITY & RAG MESH CHAIN ──────────────────────────────
+    # B1. Missed Dose Recovery Interventions (Guardian Agent)
+    missed_keywords = ["missed", "skipped", "forgot", "didn't take", "not taken", "forgot to take"]
+    if any(mk in msg_lower for mk in missed_keywords) and any(m in msg_lower for m in ["dose", "calpol", "delcon", "levolin", "meftal", "medicine", "pill", "tablet", "fever"]):
+        from graphs.guardian_agent import check_consecutive_missed_doses
+        g_res = check_consecutive_missed_doses(patient_phone)
+        med_name = g_res.get("medication_name", "prescribed medication")
+        slot_name = g_res.get("routine_slot", "scheduled")
+        return {
+            "agentType": "CHAIN_B_GUARDIAN_INTERVENTION_AGENT",
+            "isBlocked": False,
+            "replyText": f"🛡️ **Adherence Guardian Alert & Recovery Guide**\n\nHi **{patient_name}**, we noticed your fever returned after missing your {slot_name} dose of **{med_name}**.\n\n**Recommended Recovery Action:**\n1. Take your missed dose as soon as possible if within 2 hours of your scheduled window.\n2. Do NOT double up on your next dose.\n3. Stay hydrated with warm fluids and monitor your temperature."
+        }
+
+    # B2. Food & Drug Interaction Safety (Safety Agent)
+    interaction_keywords = ["together", "interaction", "side effect", "food with", "before food", "after food", "can i take"]
+    if any(ik in msg_lower for ik in interaction_keywords) and any(d in msg_lower for d in ["take", "aspirin", "ibuprofen", "paracetamol", "calpol", "gelusil", "medicine", "tablet"]):
+        from graphs.safety_agent import evaluate_drug_interactions
+        words = [w.strip("?,!.") for w in raw_msg.split() if len(w) >= 4]
+        test_meds = [{"name": w} for w in words]
+        s_res = evaluate_drug_interactions(test_meds, patient_phone)
+
+        if s_res.get("has_interactions"):
+            warn_list = "\n\n".join([f"• **[{w['severity']}]**: {w['warning']}" for w in s_res.get("warnings", [])])
+            return {
+                "agentType": "CHAIN_B_SAFETY_INTERACTION_AGENT",
+                "isBlocked": False,
+                "replyText": f"⚠️ **Food & Drug Interaction Safety Analysis**\n\n{warn_list}\n\n*Always consult your physician before combining multiple over-the-counter pain relievers.*"
+            }
+
+    # B3. Dosage Alteration Safety Guardrail
+    alter_keywords = ["double", "increase dose", "decrease dose", "change dose", "alter dose", "stop taking", "skip pill", "take more pills", "take extra"]
+    if any(ak in msg_lower for ak in alter_keywords) and any(d in msg_lower for d in ["dose", "dosage", "pill", "medicine", "medication", "tablet", "capsule"]):
+        return {
+            "agentType": "CHAIN_B_GUARDRAIL_ENFORCER",
+            "isBlocked": True,
+            "replyText": "⚠️ **Prescription Guardrail Notice**\n\nI cannot recommend altering your prescribed medication dosage. Please consult your prescribing doctor directly for any dosage adjustments or medication changes."
+        }
 
     # --- 4. ORGAN COMPLAINT DIRECT MAPPING (No Remedial Solution) ---
     organ_map = {

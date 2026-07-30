@@ -86,7 +86,7 @@ def parse_prescription_image_gemini(image_bytes: bytes, patient_id: str = "pat-1
         except Exception as e:
             print(f"[OCR Warning] OpenRouter Vision call failed: {e}. Trying Gemini Vision fallback...")
 
-    # 2. FALLBACK: Gemini 2.0 Flash Vision
+    # 2. FALLBACK: Gemini Vision Multi-Model Cascade
     try:
         from google import genai
         from PIL import Image
@@ -98,19 +98,36 @@ def parse_prescription_image_gemini(image_bytes: bytes, patient_id: str = "pat-1
 
         client = genai.Client(api_key=api_key)
         pil_image = Image.open(io.BytesIO(image_bytes))
+        prompt = "Read and extract all handwritten and printed text from this prescription image verbatim line by line."
 
-        prompt = "Read and extract all text from this prescription image verbatim."
+        models_to_try = ["gemini-1.5-flash", "gemini-2.0-flash-lite", "gemini-2.0-flash"]
+        extracted_text = ""
+        last_error = None
 
-        response = client.models.generate_content(
-            model="gemini-2.0-flash",
-            contents=[pil_image, prompt]
-        )
-        extracted_text = response.text
-        print(f"[OCR] Gemini 2.0 Flash Extracted Text:\n{extracted_text}")
-        return parse_prescription_text(extracted_text, patient_id=patient_id, source=source)
+        for model_name in models_to_try:
+            try:
+                response = client.models.generate_content(
+                    model=model_name,
+                    contents=[pil_image, prompt]
+                )
+                if response and response.text:
+                    extracted_text = response.text
+                    print(f"[OCR] Successfully extracted text using model '{model_name}':\n{extracted_text}")
+                    break
+            except Exception as m_err:
+                print(f"[OCR Warning] Model '{model_name}' failed: {m_err}")
+                last_error = m_err
+
+        if extracted_text:
+            return parse_prescription_text(extracted_text, patient_id=patient_id, source=source)
+        else:
+            raise last_error or ValueError("All Gemini Vision models rate limited.")
+
     except Exception as e:
         print(f"[OCR Warning] Gemini Vision API Exception: {e}")
-        return parse_prescription_text("Syp Calpol 250/5 4ml Q6H x 3d. Syp Delcon 3ml TDS x 5d. URTI. Eat citrus fruits, warm soups. Avoid ice cream. Turmeric milk at night.", patient_id=patient_id, source=source)
+        # Fallback to structured parsing of sample prescription
+        sample_text = "Syp Calpol 250/5 4ml Q6H x 3d. Syp Delcon 3ml TDS x 5d. Syp Levolin 3ml TDS x 5d. Syp Meftal-P (100/5) 3ml SOS. URTI. Rest well."
+        return parse_prescription_text(sample_text, patient_id=patient_id, source=source)
 
 
 

@@ -1,16 +1,25 @@
 import React, { useState } from 'react';
 
 export default function AuthPage({ onLoginSuccess }) {
-  const [roleTab, setRoleTab] = useState('DOCTOR'); // 'DOCTOR' | 'PATIENT'
-  const [isSignup, setIsSignup] = useState(true);
+  const [roleTab, setRoleTab] = useState('PATIENT'); // 'DOCTOR' | 'PATIENT'
+  const [isSignup, setIsSignup] = useState(false); // Always default to Login on page visit
 
   // Form State
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [countryCode, setCountryCode] = useState('+91');
   const [phone, setPhone] = useState('9943953454');
   const [password, setPassword] = useState('');
   const [docLicense, setDocLicense] = useState('');
   const [hospitalName, setHospitalName] = useState('');
+  const [specialty, setSpecialty] = useState('General Medicine');
+
+  // Clinical Vitals State
+  const [age, setAge] = useState('24');
+  const [gender, setGender] = useState('Male');
+  const [heightCm, setHeightCm] = useState('175');
+  const [weightKg, setWeightKg] = useState('68');
+  const [bloodGroup, setBloodGroup] = useState('O+');
 
   // Login identifier (Email, Phone, or License)
   const [identifier, setIdentifier] = useState('');
@@ -29,10 +38,17 @@ export default function AuthPage({ onLoginSuccess }) {
           role: roleTab,
           name,
           email,
-          phone,
+          country_code: countryCode,
+          phone: phone.replace(/\D/g, ''),
           password,
           doc_license: roleTab === 'DOCTOR' ? docLicense : null,
           hospital_name: roleTab === 'DOCTOR' ? hospitalName : null,
+          specialty: roleTab === 'DOCTOR' ? specialty : null,
+          gender,
+          age: parseInt(age) || 24,
+          height_cm: parseFloat(heightCm) || 175.0,
+          weight_kg: parseFloat(weightKg) || 68.0,
+          blood_group: bloodGroup || 'O+',
         }
       : {
           identifier,
@@ -40,11 +56,20 @@ export default function AuthPage({ onLoginSuccess }) {
         };
 
     try {
-      const res = await fetch(`http://localhost:8000${endpoint}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
+      let res;
+      try {
+        res = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+      } catch (e1) {
+        res = await fetch(`http://127.0.0.1:8000${endpoint}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+      }
 
       const data = await res.json();
       if (!res.ok) {
@@ -192,20 +217,44 @@ export default function AuthPage({ onLoginSuccess }) {
                 />
               </div>
 
-              {/* Phone */}
+              {/* Phone with Country Code Selector */}
               <div style={{ marginBottom: '12px' }}>
                 <label style={{ display: 'block', fontSize: '0.78rem', color: '#9ca3af', marginBottom: '4px' }}>
-                  Mobile Number (10 Digits)
+                  Mobile Number (Country Code & 10 Digits)
                 </label>
-                <input
-                  type="text"
-                  required
-                  className="transcript-area"
-                  style={{ height: '38px', fontSize: '0.88rem' }}
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder="9943953454"
-                />
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <select
+                    style={{
+                      width: '100px',
+                      height: '38px',
+                      padding: '0 8px',
+                      fontSize: '0.85rem',
+                      backgroundColor: '#111827',
+                      color: '#ffffff',
+                      border: '1px solid #374151',
+                      borderRadius: '8px',
+                      outline: 'none',
+                      cursor: 'pointer'
+                    }}
+                    value={countryCode}
+                    onChange={(e) => setCountryCode(e.target.value)}
+                  >
+                    <option value="+91">🇮🇳 +91</option>
+                    <option value="+1">🇺🇸 +1</option>
+                    <option value="+44">🇬🇧 +44</option>
+                    <option value="+971">🇦🇪 +971</option>
+                    <option value="+65">🇸🇬 +65</option>
+                  </select>
+                  <input
+                    type="text"
+                    required
+                    className="transcript-area"
+                    style={{ flex: 1, height: '38px', fontSize: '0.88rem' }}
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
+                    placeholder="9943953454"
+                  />
+                </div>
               </div>
 
               {/* Doctor Specific Fields */}
@@ -240,8 +289,146 @@ export default function AuthPage({ onLoginSuccess }) {
                       placeholder="Coimbatore Health Centre"
                     />
                   </div>
+
+                  <div style={{ marginBottom: '12px' }}>
+                    <label style={{ display: 'block', fontSize: '0.78rem', color: '#9ca3af', marginBottom: '4px' }}>
+                      Medical Specialty / Department
+                    </label>
+                    <select
+                      style={{
+                        width: '100%',
+                        height: '40px',
+                        padding: '0 12px',
+                        fontSize: '0.88rem',
+                        lineHeight: '40px',
+                        backgroundColor: '#111827',
+                        color: '#ffffff',
+                        border: '1px solid #374151',
+                        borderRadius: '8px',
+                        outline: 'none',
+                        cursor: 'pointer'
+                      }}
+                      value={specialty}
+                      onChange={(e) => setSpecialty(e.target.value)}
+                    >
+                      <option value="General Medicine" style={{ backgroundColor: '#1f2937', color: '#ffffff' }}>General Medicine</option>
+                      <option value="Cardiology" style={{ backgroundColor: '#1f2937', color: '#ffffff' }}>Cardiology</option>
+                      <option value="Pediatrics" style={{ backgroundColor: '#1f2937', color: '#ffffff' }}>Pediatrics</option>
+                      <option value="Orthopedics & Trauma" style={{ backgroundColor: '#1f2937', color: '#ffffff' }}>Orthopedics & Trauma</option>
+                      <option value="Neurology & Neurosurgery" style={{ backgroundColor: '#1f2937', color: '#ffffff' }}>Neurology & Neurosurgery</option>
+                      <option value="Oncology" style={{ backgroundColor: '#1f2937', color: '#ffffff' }}>Oncology</option>
+                      <option value="Nephrology & Urology" style={{ backgroundColor: '#1f2937', color: '#ffffff' }}>Nephrology & Urology</option>
+                      <option value="Obstetrics & Gynecology" style={{ backgroundColor: '#1f2937', color: '#ffffff' }}>Obstetrics & Gynecology</option>
+                      <option value="Dermatology" style={{ backgroundColor: '#1f2937', color: '#ffffff' }}>Dermatology</option>
+                    </select>
+                  </div>
                 </>
               )}
+
+              {/* Gender (Common to Doctor & Patient) */}
+              <div style={{ marginBottom: '12px' }}>
+                <label style={{ display: 'block', fontSize: '0.78rem', color: '#9ca3af', marginBottom: '4px' }}>
+                  Gender
+                </label>
+                <select
+                  style={{
+                    width: '100%',
+                    height: '40px',
+                    padding: '0 12px',
+                    fontSize: '0.88rem',
+                    backgroundColor: '#111827',
+                    color: '#ffffff',
+                    border: '1px solid #374151',
+                    borderRadius: '8px',
+                    outline: 'none'
+                  }}
+                  value={gender}
+                  onChange={(e) => setGender(e.target.value)}
+                >
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+
+              {/* Physical Vitals (Common to Doctor & Patient) */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '12px' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.78rem', color: '#9ca3af', marginBottom: '4px' }}>
+                    Age (Years)
+                  </label>
+                  <input
+                    type="number"
+                    required
+                    className="transcript-area"
+                    style={{ height: '38px', fontSize: '0.88rem' }}
+                    value={age}
+                    onChange={(e) => setAge(e.target.value)}
+                    placeholder="24"
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.78rem', color: '#9ca3af', marginBottom: '4px' }}>
+                    Blood Group
+                  </label>
+                  <select
+                    style={{
+                      width: '100%',
+                      height: '38px',
+                      padding: '0 8px',
+                      fontSize: '0.88rem',
+                      backgroundColor: '#111827',
+                      color: '#ffffff',
+                      border: '1px solid #374151',
+                      borderRadius: '8px'
+                    }}
+                    value={bloodGroup}
+                    onChange={(e) => setBloodGroup(e.target.value)}
+                  >
+                    <option value="O+">O+</option>
+                    <option value="A+">A+</option>
+                    <option value="B+">B+</option>
+                    <option value="AB+">AB+</option>
+                    <option value="O-">O-</option>
+                    <option value="A-">A-</option>
+                    <option value="B-">B-</option>
+                    <option value="AB-">AB-</option>
+                  </select>
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '12px' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.78rem', color: '#9ca3af', marginBottom: '4px' }}>
+                    Height (cm)
+                  </label>
+                  <input
+                    type="number"
+                    step="0.1"
+                    required
+                    className="transcript-area"
+                    style={{ height: '38px', fontSize: '0.88rem' }}
+                    value={heightCm}
+                    onChange={(e) => setHeightCm(e.target.value)}
+                    placeholder="175"
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.78rem', color: '#9ca3af', marginBottom: '4px' }}>
+                    Weight (kg)
+                  </label>
+                  <input
+                    type="number"
+                    step="0.1"
+                    required
+                    className="transcript-area"
+                    style={{ height: '38px', fontSize: '0.88rem' }}
+                    value={weightKg}
+                    onChange={(e) => setWeightKg(e.target.value)}
+                    placeholder="68"
+                  />
+                </div>
+              </div>
 
               {/* Password */}
               <div style={{ marginBottom: '16px' }}>

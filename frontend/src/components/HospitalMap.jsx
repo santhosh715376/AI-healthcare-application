@@ -16,15 +16,18 @@ export default function HospitalMap({
   const circleRef = useRef(null);
   const userMarkerRef = useRef(null);
 
-  // Initialize Leaflet Map once
+  // Initialize Leaflet Map once with GPU Canvas Renderer
   useEffect(() => {
     if (!mapContainerRef.current || mapRef.current) return;
+
+    const canvasRenderer = L.canvas({ padding: 0.5 });
 
     const map = L.map(mapContainerRef.current, {
       center: [center.lat, center.lng],
       zoom: 10,
       zoomControl: true,
-      attributionControl: false
+      attributionControl: false,
+      preferCanvas: true // ENABLES GPU CANVAS RENDERER FOR 60 FPS
     });
 
     // Tile Layer: Esri World Imagery (Satellite)
@@ -45,8 +48,9 @@ export default function HospitalMap({
       .then((geoJson) => {
         if (!mapRef.current) return;
 
-        // Neon district boundary stroke
+        // Neon district boundary stroke on Canvas
         const districtLayer = L.geoJSON(geoJson, {
+          renderer: canvasRenderer,
           style: {
             color: '#39ff14',
             weight: 3,
@@ -60,7 +64,7 @@ export default function HospitalMap({
           mapRef.current.fitBounds(districtLayer.getBounds(), { padding: [15, 15] });
         }
 
-        // Inverted polygon dimming mask outside district boundary
+        // Inverted polygon dimming mask outside district boundary on Canvas
         try {
           const outerRing = [
             [-90, -360],
@@ -73,6 +77,7 @@ export default function HospitalMap({
           const innerRing = coords.map((c) => [c[1], c[0]]);
 
           L.polygon([outerRing, innerRing], {
+            renderer: canvasRenderer,
             color: 'transparent',
             fillColor: '#000000',
             fillOpacity: 0.65,
@@ -128,20 +133,36 @@ export default function HospitalMap({
         userMarkerRef.current.setLatLng([userLocation.lat, userLocation.lng]);
       } else {
         const userIcon = L.divIcon({
-          className: '',
-          html: `<div style="
-            width: 24px;
-            height: 24px;
-            background-color: #3b82f6;
-            border: 3.5px solid #ffffff;
-            border-radius: 50%;
-            box-shadow: 0 0 16px rgba(59, 130, 246, 1);
-            animation: pulseUser 1.5s infinite;
-          "></div>`,
-          iconSize: [24, 24],
-          iconAnchor: [12, 12]
+          className: 'user-location-pulse-marker',
+          html: `<div style="position: relative; width: 28px; height: 28px;">
+            <style>
+              @keyframes userPulseRing {
+                0% { transform: scale(0.8); opacity: 0.9; }
+                100% { transform: scale(2.4); opacity: 0; }
+              }
+            </style>
+            <div style="
+              position: absolute;
+              top: 0; left: 0; width: 28px; height: 28px;
+              background-color: #3b82f6;
+              border-radius: 50%;
+              animation: userPulseRing 1.8s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+            "></div>
+            <div style="
+              position: relative;
+              width: 28px; height: 28px;
+              background-color: #2563eb;
+              border: 3px solid #ffffff;
+              border-radius: 50%;
+              box-shadow: 0 0 12px rgba(37, 99, 235, 0.9);
+              display: flex; align-items: center; justify-content: center;
+              color: white; font-size: 10px; font-weight: bold;
+            ">🔵</div>
+          </div>`,
+          iconSize: [28, 28],
+          iconAnchor: [14, 14]
         });
-        userMarkerRef.current = L.marker([userLocation.lat, userLocation.lng], { icon: userIcon })
+        userMarkerRef.current = L.marker([userLocation.lat, userLocation.lng], { icon: userIcon, zIndexOffset: 1000 })
           .addTo(mapRef.current)
           .bindTooltip('🔵 You (Active GPS Location)', { permanent: false, direction: 'top' });
       }

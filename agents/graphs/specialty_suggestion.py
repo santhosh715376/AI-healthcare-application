@@ -1,79 +1,79 @@
-"""
-Specialty Suggestion Graph (agents/graphs/specialty_suggestion.py)
-Uses Groq Llama 3.3 70B to map free-text patient symptoms to hospital specialty categories.
-ENFORCES STRICT GUARDRAIL: Output is a filter suggestion ONLY; never a medical diagnosis.
-"""
-
 import os
-from typing import Dict, Any, List
-from pydantic import BaseModel, Field
+import json
+import requests
+from typing import Dict, Any
 
-class SpecialtySuggestionResponse(BaseModel):
-    suggestedSpecialty: str = Field(description="Primary suggested medical specialty category e.g. Cardiology, Neurology, Pediatrics")
-    secondarySpecialties: List[str] = Field(default_factory=list, description="Additional relevant specialty categories")
-    reasoning: str = Field(description="Brief, non-diagnostic explanation of why these hospital departments match the input keywords")
-    disclaimer: str = Field(
-        default="Suggested based on symptom keywords to help filter nearby hospitals. This is NOT a medical diagnosis.",
-        description="Mandatory clinical disclaimer"
-    )
+STATIC_HIGH_URGENCY_BANNER = "Call 108 or your nearest ER directly if this is severe."
 
-def suggest_specialty_groq(symptoms: str) -> Dict[str, Any]:
+def classify_specialty_and_urgency(symptom_text: str) -> Dict[str, Any]:
     """
-    Calls Groq Llama 3.3 70B to parse symptom keywords into hospital specialty categories.
+    Uses Groq llama-3.1-8b-instant to classify symptom text into:
+    - specialty (e.g. Cardiology, Trauma, Pediatrics, Orthopedics, General Medicine)
+    - urgency ("HIGH" | "MEDIUM" | "LOW")
+    - reasoning (1 sentence explanation)
     """
-    groq_key = os.environ.get("GROQ_API_KEY")
-    
-    if groq_key and not groq_key.startswith("YOUR_"):
-        try:
-            from langchain_groq import ChatGroq
-            from dotenv import load_dotenv
-            load_dotenv()
+    api_key = os.environ.get("GROQ_API_KEY")
+    if not api_key:
+        print("[SpecialtyClassifier] GROQ_API_KEY missing, using deterministic fallback.")
+        symptom_lower = symptom_text.lower()
+        if any(k in symptom_lower for k in ["chest", "heart", "cardiac", "stroke", "numbness"]):
+            return {
+                "specialty": "Cardiology",
+                "urgency": "HIGH",
+                "reasoning": "Symptoms of potential cardiac or vascular emergency require immediate cardiology triage."
+            }
+        elif any(k in symptom_lower for k in ["fracture", "bone", "joint", "sprain", "dislocation"]):
+            return {
+                "specialty": "Orthopedics",
+                "urgency": "MEDIUM",
+                "reasoning": "Musculoskeletal injury requires orthopedic evaluation."
+            }
+        else:
+            return {
+                "specialty": "General Medicine",
+                "urgency": "LOW",
+                "reasoning": "General clinical evaluation recommended."
+            }
 
-            llm = ChatGroq(
-                model="llama-3.3-70b-versatile",
-                groq_api_key=groq_key,
-                temperature=0.1
-            ).with_structured_output(SpecialtySuggestionResponse)
+    prompt = f"""You are a clinical triage classifier. Analyze the user's symptom description:
+"{symptom_text}"
 
-            prompt = f"""
-            You are a hospital department routing assistant. 
-            Analyze the following patient symptom description:
-            "{symptoms}"
+Respond strictly in JSON with 3 keys:
+1. "specialty": Most relevant medical specialty (e.g. Cardiology, Trauma, Pediatrics, Orthopedics, General Medicine, Neurology).
+2. "urgency": "HIGH" (life-threatening/severe), "MEDIUM" (urgent care needed), or "LOW" (routine/non-urgent).
+3. "reasoning": 1 sentence explaining the clinical classification.
 
-            CRITICAL GUARDRAILS:
-            1. DO NOT diagnose the patient. 
-            2. Map the symptoms to 1 primary hospital department specialty (e.g. Cardiology, Neurology, Gastroenterology, Orthopedics, Pediatrics, Emergency).
-            3. Provide a brief 1-sentence non-diagnostic rationale explaining why this hospital department treats these symptoms.
-            """
+Output JSON ONLY:"""
 
-            result: SpecialtySuggestionResponse = llm.invoke(prompt)
-            return result.dict()
-        except Exception as e:
-            print(f"Groq specialty suggestion error, using fallback: {e}")
-
-    # Deterministic fallback logic
-    s_lower = symptoms.lower()
-    if any(kw in s_lower for kw in ["chest", "heart", "cardiac", "pulse"]):
-        spec = "Cardiology"
-    elif any(kw in s_lower for kw in ["brain", "headache", "dizzy", "seizure", "numb"]):
-        spec = "Neurology"
-    elif any(kw in s_lower for kw in ["stomach", "vomit", "abdomen", "gastric"]):
-        spec = "Gastroenterology"
-    elif any(kw in s_lower for kw in ["bone", "fracture", "joint", "knee", "back"]):
-        spec = "Orthopedics"
-    elif any(kw in s_lower for kw in ["child", "baby", "pediatric"]):
-        spec = "Pediatrics"
-    else:
-        spec = "General Medicine"
-
-    return {
-        "suggestedSpecialty": spec,
-        "secondarySpecialties": ["General Medicine", "Emergency"],
-        "reasoning": f"Filtered hospital departments matching keywords in '{symptoms}'.",
-        "disclaimer": "Suggested based on symptom keywords to help filter nearby hospitals. This is NOT a medical diagnosis."
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json"
     }
 
-if __name__ == "__main__":
-    res = suggest_specialty_groq("severe chest pain radiating to left arm")
-    import json
-    print(json.dumps(res, indent=2))
+    payload = {
+        "model": "llama-3.1-8b-instant",
+        "messages": [{"role": "user", "content": prompt}],
+        "temperature": 0.1,
+        "response_format": {"type": "json_object"}
+    }
+
+    try:
+        res = requests.post("https://api.groq.com/openai/v1/chat/completions", headers=headers, json=payload, timeout=10)
+        data = res.json()
+        content = data["choices"][0]["message"]["content"]
+        parsed = json.loads(content)
+        return {
+            "specialty": parsed.get("specialty", "General Medicine"),
+            "urgency": parsed.get("urgency", "MEDIUM").upper(),
+            "reasoning": parsed.get("reasoning", "Clinical triage evaluation completed.")
+        }
+    except Exception as e:
+        print(f"[SpecialtyClassifier] Groq API call error: {e}")
+        return {
+            "specialty": "General Medicine",
+            "urgency": "MEDIUM",
+            "reasoning": "General clinical triage evaluation fallback."
+        }
+
+# Alias for server compatibility
+suggest_specialty_groq = classify_specialty_and_urgency

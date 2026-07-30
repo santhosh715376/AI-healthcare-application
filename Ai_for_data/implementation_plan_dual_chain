@@ -1,0 +1,67 @@
+# Master Implementation Plan: Dual-Chain Architecture (Deterministic Exact vs Semantic Similarity RAG)
+
+## 1. System Architecture: Dual-Chain Split
+
+[Certain] You are **100% CORRECT**. Healthcare systems must strictly separate **Deterministic Factual Data (Chain A)** from **Semantic Reasoning & Vector Retrieval (Chain B)** to guarantee 100% precision without hallucination.
+
+```text
+                                USER QUERY INGESTION
+                                         │
+                                         ▼
+ ┌──────────────────────────────────────────────────────────────────────────────────────────┐
+ │ SEMANTIC DUAL-CHAIN ROUTER (`agents/graphs/router.py`)                                   │
+ ├──────────────────────────────────────────────────────────────────────────────────────────┤
+ │                                                                                          │
+ │  Is the prompt asking for exact database facts (prescriptions, check-in logs, vitals)?   │
+ │         │                                                         │                      │
+ │         ├── YES ──► CHAIN A (Deterministic Exact)                 └── NO ──► CHAIN B     │
+ │                                                                           (Semantic RAG) │
+ └─────────┼─────────────────────────────────────────────────────────────────┼──────────────┘
+           │                                                                 │
+           ▼                                                                 ▼
+ ┌────────────────────────────────────────┐                ┌────────────────────────────────────────┐
+ │ CHAIN A: DETERMINISTIC EXACT LEDGER    │                │ CHAIN B: SEMANTIC SIMILARITY RAG MESH  │
+ ├────────────────────────────────────────┤                ├────────────────────────────────────────┤
+ │ • Query: SQLite `healthcare.db` (WAL)  │                │ • Engine: ChromaDB + Groq Llama 3.3    │
+ │ • Accuracy: 100% Deterministic         │                │ • Latency: <25ms Vector Similarity     │
+ │ • Latency: <5ms                        │                │ • Applies to: Interventions, Safety,   │
+ │ • Applies to: Prescriptions, Logs,     │                │   Triage, Comfort Guides, Out-of-Scope │
+ │   Vitals, Hospital Geolocation         │                │   Guardrails                           │
+ └────────────────────────────────────────┘                └────────────────────────────────────────┘
+```
+
+---
+
+## 2. Master Classification Matrix (Chain A vs Chain B Tasks)
+
+| Task / Query Type | Assigned Processing Chain | Data Store Used | Output Guarantee |
+|---|---|---|---|
+| **1. Prescription History Queries** (*"What medicines were prescribed?"*) | **Chain A (Deterministic)** | SQLite `PrescriptionDB` | 100% Factual SQL JSON string (Zero LLM drift) |
+| **2. Adherence Logs & Check-In Status** (*"Did I take my morning dose?"*) | **Chain A (Deterministic)** | SQLite `AdherenceLogDB` | Exact timestamp & TAKEN/DUE status |
+| **3. Patient Profile Vitals** (*"What is my blood group & age?"*) | **Chain A (Deterministic)** | SQLite `PatientDB` | Exact registered integers/strings |
+| **4. Hospital Geolocation & Phone** (*"Where is KMCH ER?"*) | **Chain A (Deterministic)** | SQLite `HospitalDB` | Factual Haversine KM & 24/7 Phone |
+| **5. Missed Dose Recovery Interventions** (*"I missed my Calpol dose and fever returned"*) | **Chain B (Semantic RAG)** | ChromaDB + `guardian_agent.py` | Semantic intent detection & recovery protocol |
+| **6. Food & Drug Interaction Safety** (*"Can I take Aspirin with Ibuprofen?"*) | **Chain B (Semantic RAG)** | Contraindication Matrix + `safety_agent.py` | Multi-drug bleeding risk analysis & spacing rules |
+| **7. Clinical Comfort & Lab Value Guides** (`/comfort`, `/report_reader`) | **Chain B (Semantic RAG)** | ChromaDB + Groq Llama 3.3 | Structured 5-column Markdown tables |
+| **8. Organ & Specialty Discovery** (`/specialty`, `"my knee hurts"`) | **Chain B (Semantic RAG)** | `specialty_suggestion.py` | Organ-to-Specialty mapping & sector ranking |
+| **9. Non-Medical Out-of-Scope Guardrails** (*"what is 1+1"*) | **Chain B (Semantic RAG)** | Out-of-Scope Filter | `🛡️ Healthcare Scope Guardrail Notice` |
+
+---
+
+## 3. Implementation Workflow
+
+### Step 1: Update Dual-Chain Router ([`agents/graphs/patient_advisor_agent.py`](file:///d:/health_care/agents/graphs/patient_advisor_agent.py))
+- **Chain A Fast-Path:** If prompt requests explicit records (*"what medicine"*, *"my prescription"*, *"check-in status"*), immediately bypass LLMs and execute **Chain A SQL Queries** returning 100% exact facts.
+- **Chain B Semantic RAG:** For interventions, interactions, symptoms, and commands, route through **Chain B Semantic Mesh** (`guardian_agent`, `safety_agent`, `chroma_store`).
+
+---
+
+## 4. Verification Plan
+
+### Automated Verification
+1. `python scratch/test_dual_chain_architecture.py`: Verify that Chain A queries return 100% exact SQLite facts (<5ms) and Chain B queries return semantic RAG interventions without misclassifying queries into symptom rankings.
+2. `npm run build` in `frontend/`: Verify 0 compilation errors.
+
+---
+
+Review this Master Implementation Plan. **No code will be edited until you explicitly reply to approve this plan.**

@@ -38,18 +38,21 @@ Type a command, or just ask your question.`
   const handlePdfUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
-      if (file.type !== 'application/pdf' && !file.name.endsWith('.pdf')) {
-        alert('Please select a valid PDF file.');
-        return;
-      }
       setPdfFileName(file.name);
-      
       const reader = new FileReader();
-      reader.onload = (event) => {
-        const text = event.target.result;
-        setPdfContext(text.substring(0, 3000));
-      };
-      reader.readAsText(file);
+      
+      if (file.type.startsWith('image/')) {
+        reader.onload = (event) => {
+          setPdfContext(`[IMAGE ATTACHMENT: ${file.name}] Attached prescription/diagnostic photo.`);
+        };
+        reader.readAsDataURL(file);
+      } else {
+        reader.onload = (event) => {
+          const text = event.target.result;
+          setPdfContext(text.substring(0, 3000));
+        };
+        reader.readAsText(file);
+      }
     }
   };
 
@@ -397,6 +400,13 @@ Type a command, or just ask your question.`
         </div>
 
         {/* Floating Input Pill */}
+        <input
+          type="file"
+          ref={fileInputRef}
+          style={{ display: 'none' }}
+          accept=".pdf,.txt,.csv,.json,.png,.jpg,.jpeg,.webp"
+          onChange={handlePdfUpload}
+        />
         <div style={{
           display: 'flex',
           alignItems: 'center',
@@ -408,7 +418,7 @@ Type a command, or just ask your question.`
         }}>
           <button
             onClick={() => fileInputRef.current?.click()}
-            title="Attach Transient PDF Lab Report or Record"
+            title="Attach Medical Document or Prescription Photo"
             style={{
               background: 'none',
               border: 'none',

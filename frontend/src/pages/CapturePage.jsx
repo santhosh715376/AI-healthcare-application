@@ -86,11 +86,11 @@ export default function CapturePage({ currentUser, onLogout }) {
       </header>
 
       {/* Strict Role-Based Portal Workspace Rendering */}
-      <main className="app-main" style={{ flex: 1, overflow: 'hidden' }}>
+      <main className="app-main" style={{ flex: 1, overflowY: 'auto' }}>
         {userRole === 'doctor' ? (
           <DoctorPortal currentUser={currentUser} />
         ) : (
-          <PatientPortal currentUser={currentUser} />
+          <PatientPortal currentUser={currentUser} onSignOut={onLogout} />
         )}
       </main>
     </div>
