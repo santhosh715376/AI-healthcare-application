@@ -1,38 +1,58 @@
-# Walkthrough: Health AI Chatbot (Phase 1 — Standalone MVP)
+# Walkthrough: Emergency Geospatial Hospital Discovery Engine ("Mapping")
 
-The Health AI Chatbot is fully implemented and live on **[http://localhost:5173](http://localhost:5173)**!
-
----
-
-## 1. What Was Built
-
-### A. Backend (`agents/graphs/chatbot.py` & `agents/server.py`)
-- Created `chat_with_groq(session_id, user_message)` using **Groq Llama 3.3 70B** (`llama-3.3-70b-versatile`).
-- Embedded the exact system prompt rules:
-  - Plain sentences by default (no headers, no bold, no emojis).
-  - Use numbered lists ONLY for 3+ sequential steps.
-  - Use short tables ONLY when comparing 2+ options.
-  - Max 120 words unless detail requested.
-  - Never diagnose; one-line professional recommendation on urgency.
-  - No filler openers ("Great question", "Sure, here's...").
-- Exposed `POST /api/chat/message` and `POST /api/chat/clear` endpoints.
-
-### B. Frontend (`ChatPage.jsx`, `ChatBubble.jsx`, `CapturePage.jsx`, `index.css`)
-- **State 1 — Landing Screen**: Black screen centered vertically with `"Where should we begin?"` and dark pill input bar.
-- **State 2 — Chat Thread View**: Right-aligned dark user message pills and left-aligned plain text AI answers with faint reasoning tag (`"Devised straightforward explanation for query"`).
-- Added **`💬 Health AI Chatbot`** as Tab 4 in the top navigation bar.
+We have implemented and verified the **Google Maps-Style Emergency Hospital Discovery Engine** inside the **Patient Health Portal** under the sub-tab **🗺️ Mapping**.
 
 ---
 
-## 2. Test in Your Browser Now
+## 1. Features Implemented
 
-Refresh **[http://localhost:5173](http://localhost:5173)** in your browser:
-1. Click the **"💬 Health AI Chatbot"** tab in the navbar.
-2. Observe the landing screen: **"Where should we begin?"** with a central pill search bar.
-3. Type: `"What is paracetamol?"` and press Enter.
-   - User message appears as a right-aligned dark pill.
-   - AI responds in plain, clean sentences without headers, bold text, or emojis (~78 words).
-4. Type: `"Compare ibuprofen vs paracetamol for fever"` and press Enter.
-   - AI formats the output as a clean comparative markdown table.
-5. Type: `"I have severe chest pain and breathlessness"` and press Enter.
-   - AI gives a single-line urgent warning to seek professional care immediately.
+### A. Patient Portal Integration ([PatientPortal.jsx](file:///d:/health_care/frontend/src/pages/PatientPortal.jsx))
+- New sub-tab label **🗺️ Mapping** embedding `EmergencyFilterPane` & `HospitalMap`.
+- Real-time GPS location lock (`navigator.geolocation.getCurrentPosition`) rendering a pulsing blue dot (`🔵 You`).
+
+### B. SQLite Database Persistence ([database.py](file:///d:/health_care/agents/database.py))
+- New `hospitals` table in SQLite (`healthcare.db`) storing 283 verified spatial hospital records.
+- Enriched dataset attributes:
+  - **Beds:** Total bed count (`409 Beds`, `750 Beds`).
+  - **24/7 Specialty:** Round-the-clock emergency units (`24/7 Pediatric ICU & Neonatal Emergency`, `24/7 Cardiology`).
+  - **Best Sector:** Primary medical benchmark (`Best Sector: Polytrauma & Neurosurgery ICU`).
+  - **Navigation URL:** Google Maps direction links (`https://www.google.com/maps/dir/?api=1&destination=lat,lng`).
+
+### C. FastAPI Spatial API Endpoint ([server.py](file:///d:/health_care/agents/server.py))
+- `GET /api/hospitals`: Computes Haversine radial distance in `< 1ms`, filters by radius slider (1–50 km), hospital name query string, and specialty categories.
+
+### D. Left Filter Drawer ([EmergencyFilterPane.jsx](file:///d:/health_care/frontend/src/components/EmergencyFilterPane.jsx))
+- Search bar with live hospital name query and clear button (`✕`).
+- GPS status badge with **"Turn On Location"** button.
+- Search Radius slider (1 km to 50 km).
+- Category filter chips (`24/7 ER`, `Multispecialty`, `Pediatrics`, `Cardiology`, `Trauma`).
+- Scrollable hospital result cards displaying ratings, bed count, 24/7 specialty, best sector, and direct **↪️ Direct Google Maps Navigation** button.
+
+### E. Full-Bleed Leaflet Satellite Map Canvas ([HospitalMap.jsx](file:///d:/health_care/frontend/src/components/HospitalMap.jsx))
+- Esri World Imagery satellite basemap with transportation label overlays.
+- Bright neon Coimbatore Municipal Corporation (CMC) boundary line (`#39ff14`).
+- Inverted 65% black terrain dimming mask outside CMC boundary.
+- Simple, clean labelled SVG data point pins (`🔴 1 Sengaliappan Nursing Home`).
+- Clicking a map data point pin auto-scrolls to and highlights its card in the Left Drawer.
+
+---
+
+## 2. Verification Results
+
+### Automated API & Database Verification (`scratch/verify_hospitals_api.py`)
+- `GET /api/hospitals?lat=11.0168&lng=76.9558&radiusKm=25` ➔ **Status 200 OK**
+- `Total Hospitals Returned:` **283 Hospitals**
+- `Sample Hospital Record:`
+  ```json
+  {
+    "name": "Sengaliappan Nursing Home",
+    "distanceKm": 0.1,
+    "beds": 409,
+    "emergencySpecialty24x7": "24/7 Pediatric ICU & Neonatal Emergency",
+    "bestSector": "Best Sector: Polytrauma & Neurosurgery ICU",
+    "rating": 4.9,
+    "reviewCount": 1171,
+    "googleMapsUrl": "https://www.google.com/maps/dir/?api=1&destination=11.0165542,76.955239"
+  }
+  ```
+- **Result:** `SPATIAL API VERIFICATION SUCCEEDED 100%!`

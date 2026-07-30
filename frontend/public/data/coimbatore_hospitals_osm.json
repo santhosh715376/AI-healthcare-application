@@ -1,0 +1,2838 @@
+{
+    "last_fetched": "2026-07-28T16:37:41.093119Z",
+    "source": "Overpass API (OSM)",
+    "boundary": "Coimbatore Municipal Corporation",
+    "hospital_count": 283,
+    "hospitals": [
+        {
+            "name": "SREC Health Center",
+            "osm_id": "247177822",
+            "lat": 11.1005451,
+            "lon": 76.9637445,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Ellen Multispeciality Hospital",
+            "osm_id": "321420767",
+            "lat": 11.0213634,
+            "lon": 76.9708723,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "GP Hospital",
+            "osm_id": "321420772",
+            "lat": 11.0201233,
+            "lon": 76.9710726,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Saravana Dental Care Hospital",
+            "osm_id": "330069980",
+            "lat": 11.0028292,
+            "lon": 76.9513725,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Senthil Hospital",
+            "osm_id": "330070075",
+            "lat": 11.0089752,
+            "lon": 76.9578034,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Dr. S. G. Rajarathinam Hospital",
+            "osm_id": "330070077",
+            "lat": 11.0095256,
+            "lon": 76.9619316,
+            "emergency": "",
+            "phone": "+914222236730",
+            "website": "https://dr-sg-rajarathnam-hospital.business.site/",
+            "operator": ""
+        },
+        {
+            "name": "K. G. Hospital, Coimbatore",
+            "osm_id": "337604253",
+            "lat": 11.0004227,
+            "lon": 76.9715023,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Sengaliappan Nursing Home",
+            "osm_id": "343436821",
+            "lat": 11.0165542,
+            "lon": 76.955239,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Bala Hospital",
+            "osm_id": "803091648",
+            "lat": 10.9969296,
+            "lon": 76.995705,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Kongunad Hospital, Coimbatore",
+            "osm_id": "832779637",
+            "lat": 11.018058,
+            "lon": 76.9604883,
+            "emergency": "yes",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Sheela Clinic",
+            "osm_id": "832779865",
+            "lat": 11.01843,
+            "lon": 76.9604642,
+            "emergency": "yes",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Surya Hospital, Coimbatore",
+            "osm_id": "1039493036",
+            "lat": 11.0390101,
+            "lon": 76.979517,
+            "emergency": "yes",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Vasan eye Care Hospital",
+            "osm_id": "1051328428",
+            "lat": 10.9560967,
+            "lon": 76.9540004,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "PSG Hospitals",
+            "osm_id": "1423948022",
+            "lat": 11.0188398,
+            "lon": 77.0073136,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "K T V R Group Hospital",
+            "osm_id": "1425221969",
+            "lat": 11.026167,
+            "lon": 76.9499384,
+            "emergency": "yes",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Coimbatore Bone and Joint Foundation (P) Ltd.",
+            "osm_id": "1464278789",
+            "lat": 11.0149404,
+            "lon": 76.9543844,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Womens Medical Centre, Coimbatore",
+            "osm_id": "1466917439",
+            "lat": 11.0337824,
+            "lon": 76.9517175,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Masonic Medical Centre For Children",
+            "osm_id": "1467928839",
+            "lat": 10.9997961,
+            "lon": 76.9799441,
+            "emergency": "yes",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Somu medicals",
+            "osm_id": "1468079158",
+            "lat": 11.0264568,
+            "lon": 76.9448591,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Akila Medicals",
+            "osm_id": "1468079184",
+            "lat": 11.0265516,
+            "lon": 76.9443924,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Dr.U.S.Prakash's Clinic",
+            "osm_id": "1468079553",
+            "lat": 11.0256249,
+            "lon": 76.9372845,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "KG Eye Hospital",
+            "osm_id": "1469101395",
+            "lat": 11.0825506,
+            "lon": 76.997422,
+            "emergency": "yes",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Shree Siva Hospital, Ganapathy,",
+            "osm_id": "1469149130",
+            "lat": 11.0441103,
+            "lon": 76.9856071,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Sai Shraddha Hospitality",
+            "osm_id": "1472192499",
+            "lat": 11.0254581,
+            "lon": 76.9726262,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Vega ENT Hospitals",
+            "osm_id": "1472211318",
+            "lat": 11.0144183,
+            "lon": 76.9437894,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Sitalakshmi Hospital",
+            "osm_id": "1472211741",
+            "lat": 11.0142906,
+            "lon": 76.9449521,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Manonmani Hospital",
+            "osm_id": "1472212062",
+            "lat": 11.0147975,
+            "lon": 76.9475002,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Preetam's Cardio Care",
+            "osm_id": "1472215145",
+            "lat": 11.0152003,
+            "lon": 76.9498136,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Rasi Hospital",
+            "osm_id": "1472230522",
+            "lat": 11.0097731,
+            "lon": 76.9503293,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "City Hospital",
+            "osm_id": "1473802712",
+            "lat": 11.0193391,
+            "lon": 76.9635166,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Bethel Hospital",
+            "osm_id": "1473802741",
+            "lat": 11.0190021,
+            "lon": 76.962084,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Arasu Medicals",
+            "osm_id": "1473830522",
+            "lat": 11.010593,
+            "lon": 76.950234,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "The Eye Foundaton",
+            "osm_id": "1473830523",
+            "lat": 11.0134549,
+            "lon": 76.9496753,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Moses Eye Hospital",
+            "osm_id": "1474413414",
+            "lat": 10.9943793,
+            "lon": 76.9664663,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Thayarammal poly clinic",
+            "osm_id": "1474451371",
+            "lat": 10.9935069,
+            "lon": 76.9756194,
+            "emergency": "yes",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Vasan Eye Care Hospital",
+            "osm_id": "1474518445",
+            "lat": 11.0124743,
+            "lon": 76.9862396,
+            "emergency": "yes",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Coimbatore Kidney Centre",
+            "osm_id": "1474518448",
+            "lat": 11.009415,
+            "lon": 76.9893791,
+            "emergency": "yes",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Clinic - Dr.Rajashree",
+            "osm_id": "1474872830",
+            "lat": 10.9978977,
+            "lon": 76.9893923,
+            "emergency": "no",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "K. J. Hospital",
+            "osm_id": "1474923291",
+            "lat": 10.9414068,
+            "lon": 76.9369908,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Ashwin Hospital",
+            "osm_id": "1913565236",
+            "lat": 11.0241826,
+            "lon": 76.9731186,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Arya Vaidya Pharmacy",
+            "osm_id": "3204361323",
+            "lat": 10.995609,
+            "lon": 76.9917076,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Vasan Eye Care Hospital, Kuniamuthoor",
+            "osm_id": "3781623526",
+            "lat": 10.957713,
+            "lon": 76.9543156,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Ortho One",
+            "osm_id": "4259650392",
+            "lat": 11.0018351,
+            "lon": 77.0328061,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Government Urban Primary Health Center",
+            "osm_id": "4275430420",
+            "lat": 11.0827084,
+            "lon": 76.9427442,
+            "emergency": "yes",
+            "phone": "",
+            "website": "",
+            "operator": "Government"
+        },
+        {
+            "name": "Aravind Eye Hospital (City Centre)",
+            "osm_id": "4315800697",
+            "lat": 11.0153158,
+            "lon": 76.9539881,
+            "emergency": "",
+            "phone": "91-422-2540400",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Lotus Eye Care Hospital, Coimbatore",
+            "osm_id": "4379089793",
+            "lat": 11.0140006,
+            "lon": 76.9543624,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "ECHS",
+            "osm_id": "4402079982",
+            "lat": 11.0051924,
+            "lon": 76.9879176,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "ECHS Polyclinic",
+            "osm_id": "4402079983",
+            "lat": 11.0053321,
+            "lon": 76.9876533,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Unknown Hospital",
+            "osm_id": "4407829092",
+            "lat": 11.0248424,
+            "lon": 76.9564023,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Baalaje Hospital",
+            "osm_id": "4421640990",
+            "lat": 11.0247244,
+            "lon": 76.9055811,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Sri Lakshmi Hospital, Coimbatore",
+            "osm_id": "4426171975",
+            "lat": 11.0782349,
+            "lon": 76.9409348,
+            "emergency": "",
+            "phone": "+914222644133",
+            "website": "https://www.smch.in/",
+            "operator": ""
+        },
+        {
+            "name": "Vijaya Hospitals",
+            "osm_id": "4472726820",
+            "lat": 11.0148532,
+            "lon": 76.9489909,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Shri Hari Hospital, Coimbatore",
+            "osm_id": "4510663590",
+            "lat": 11.0265248,
+            "lon": 76.9475939,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Bethesda Hospital",
+            "osm_id": "4571552072",
+            "lat": 11.0354039,
+            "lon": 76.9304803,
+            "emergency": "yes",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Kiruba Hospital, Koilmedu,Coimbatore",
+            "osm_id": "4571573811",
+            "lat": 11.0335068,
+            "lon": 76.929457,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "G R Hospital",
+            "osm_id": "4603303688",
+            "lat": 11.0093491,
+            "lon": 77.0024216,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "TNAU Hospital",
+            "osm_id": "4703147672",
+            "lat": 11.0080012,
+            "lon": 76.9362691,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Unknown Hospital",
+            "osm_id": "4825348621",
+            "lat": 11.087657,
+            "lon": 77.003366,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Telugupalayam Hospital",
+            "osm_id": "5338403022",
+            "lat": 10.9842757,
+            "lon": 76.9297655,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Leo Ortho care Hospital",
+            "osm_id": "5643927426",
+            "lat": 10.9969428,
+            "lon": 76.9993022,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Eye Trust Hospital",
+            "osm_id": "5774631561",
+            "lat": 11.0242987,
+            "lon": 76.9582327,
+            "emergency": "",
+            "phone": "0422-4366927",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "ESI Hospital",
+            "osm_id": "6356067518",
+            "lat": 11.0092807,
+            "lon": 77.0240486,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": "Employees' State Insurance"
+        },
+        {
+            "name": "bhagirathi hospital",
+            "osm_id": "6392075888",
+            "lat": 11.0794799,
+            "lon": 76.9409445,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "KG Hospital Blood Bank",
+            "osm_id": "6886497248",
+            "lat": 11.0004991,
+            "lon": 76.9716378,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "PSG Hospital Blood Bank",
+            "osm_id": "6886497264",
+            "lat": 11.0184957,
+            "lon": 77.0069428,
+            "emergency": "",
+            "phone": "",
+            "website": "https://www.psghospitals.com/",
+            "operator": ""
+        },
+        {
+            "name": "Bethel Hospital Pvt. Ltd. - Coimbatore",
+            "osm_id": "6914767991",
+            "lat": 11.0187223,
+            "lon": 76.9612328,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Park Hospital, Coimbatore",
+            "osm_id": "6914767996",
+            "lat": 11.0419411,
+            "lon": 77.0379131,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Mouthi Hospital Vadavalli, Coimbatore",
+            "osm_id": "6914880547",
+            "lat": 11.0291808,
+            "lon": 76.9019419,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Vikaram ENT Hospital, Coimbatore",
+            "osm_id": "6914895660",
+            "lat": 11.0120021,
+            "lon": 76.9494063,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "R. A. Hospital",
+            "osm_id": "6914896216",
+            "lat": 10.998556,
+            "lon": 76.9918562,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "R V Hospital, Coimbatore",
+            "osm_id": "6914896226",
+            "lat": 11.0546916,
+            "lon": 77.0639178,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Vasavi Hospital",
+            "osm_id": "6914911765",
+            "lat": 10.9927872,
+            "lon": 76.9550228,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Vallalar Hospitals (Pvt) Ltd",
+            "osm_id": "6914927152",
+            "lat": 11.0218408,
+            "lon": 76.9152537,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Sri Ramana Hospital",
+            "osm_id": "6914937646",
+            "lat": 10.9972817,
+            "lon": 76.9598213,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Sri Sakthi Hospital, Ganapathi, Coimbatore",
+            "osm_id": "6914937682",
+            "lat": 11.0474918,
+            "lon": 76.9930659,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Sri Maruthi Medical Center and Hospital",
+            "osm_id": "6915018753",
+            "lat": 11.0891666,
+            "lon": 76.9384105,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Veeku Hospital",
+            "osm_id": "6915464620",
+            "lat": 11.0150799,
+            "lon": 76.9517022,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Pranav Clinic",
+            "osm_id": "6917388569",
+            "lat": 11.0631074,
+            "lon": 76.9985509,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Gowtham Hospital",
+            "osm_id": "6926049956",
+            "lat": 10.962127,
+            "lon": 76.9556397,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "St Lukes Hospital, Coimbatore",
+            "osm_id": "6926055606",
+            "lat": 11.0335424,
+            "lon": 77.0376261,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Sri Guru Hospital Pvt Ltd",
+            "osm_id": "6926369631",
+            "lat": 11.0264336,
+            "lon": 76.9423118,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "H. S. Hospital",
+            "osm_id": "6926437444",
+            "lat": 11.0418035,
+            "lon": 76.9477855,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Vedanayagam Hospital (P) Limited",
+            "osm_id": "6928304820",
+            "lat": 11.0144375,
+            "lon": 76.9504979,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "VGM Hospital",
+            "osm_id": "6928594608",
+            "lat": 10.9986666,
+            "lon": 77.0143291,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Dr. Muthu's Ortho Centre-Coimbatore",
+            "osm_id": "6928752789",
+            "lat": 11.0026291,
+            "lon": 77.0406497,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Sree Abishek Hospitals",
+            "osm_id": "6928817376",
+            "lat": 11.0430968,
+            "lon": 76.9241157,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Sree Andal Hospital",
+            "osm_id": "6928852611",
+            "lat": 11.0560065,
+            "lon": 77.0164575,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "The Arya Vaidya Chikitsalayam and Research Institue",
+            "osm_id": "6929292296",
+            "lat": 10.9958401,
+            "lon": 76.9915813,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Kovai Ent Hospital and Research Centre",
+            "osm_id": "6929951553",
+            "lat": 11.041741,
+            "lon": 76.9835246,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Koushikha Hospital",
+            "osm_id": "6929976817",
+            "lat": 10.9589868,
+            "lon": 76.9788824,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Chinniampalayam Venkateshwara Hospital",
+            "osm_id": "6930487814",
+            "lat": 11.0545152,
+            "lon": 77.0652106,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Richmond Hospital",
+            "osm_id": "6932012014",
+            "lat": 10.9946605,
+            "lon": 76.9793813,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Ranga Hospital, Velandipalayam",
+            "osm_id": "6932159823",
+            "lat": 11.0290235,
+            "lon": 76.932096,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Rao Hospital",
+            "osm_id": "6932162502",
+            "lat": 11.018513,
+            "lon": 76.9445555,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Joseph Hospital, Coimbatore",
+            "osm_id": "6932200240",
+            "lat": 11.017244,
+            "lon": 76.9990446,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Ramvel Hospital",
+            "osm_id": "6932203509",
+            "lat": 11.01362,
+            "lon": 77.0222618,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Immaculate Conception Convent Hospital",
+            "osm_id": "6933038573",
+            "lat": 10.9943683,
+            "lon": 76.9642074,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Vasan Eye Care Hospital, Coimbatore",
+            "osm_id": "6934018833",
+            "lat": 11.0091245,
+            "lon": 76.9454058,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Krithika Hospital , Tiruppur",
+            "osm_id": "6934246107",
+            "lat": 11.0424742,
+            "lon": 76.9476856,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Lotus Eye Care Hospital Ltd, Coimbatore",
+            "osm_id": "6934271130",
+            "lat": 11.0406116,
+            "lon": 77.0401856,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Nandha Hospital",
+            "osm_id": "6934340596",
+            "lat": 11.0168636,
+            "lon": 76.9756664,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Nataraj Medical Care Center Private Limited",
+            "osm_id": "6934340612",
+            "lat": 10.994101,
+            "lon": 76.9569379,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Ortho One Orthopaedic Speciality Center(A Unit Of Spine Arthroscopic and Joint Replacement Center Pvt Ltd)",
+            "osm_id": "6934340734",
+            "lat": 10.9962048,
+            "lon": 77.0082217,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Padmavathy Hospital",
+            "osm_id": "6934340771",
+            "lat": 11.0427427,
+            "lon": 76.9477212,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Vishnu Ent Hospital - Coimbatore",
+            "osm_id": "6934430447",
+            "lat": 11.0265389,
+            "lon": 76.9470734,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "The Balakrishnan Hospital",
+            "osm_id": "6934738477",
+            "lat": 11.0190567,
+            "lon": 76.9625585,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Sangeetha Hospital, Coimbatore",
+            "osm_id": "6935188981",
+            "lat": 10.963603,
+            "lon": 76.9563907,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Priya Hospital, Coimbatore",
+            "osm_id": "6936305098",
+            "lat": 10.9446403,
+            "lon": 76.9352093,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Sumith Hospital",
+            "osm_id": "6936310680",
+            "lat": 11.0261493,
+            "lon": 77.0176752,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Rajah Hospital, Coimbatore",
+            "osm_id": "6936339717",
+            "lat": 11.0270299,
+            "lon": 77.0187333,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Lalitha Hospital",
+            "osm_id": "6936359924",
+            "lat": 11.0174139,
+            "lon": 76.9617565,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Hindusthan Hospital, Coimbatore",
+            "osm_id": "6936359961",
+            "lat": 11.019682,
+            "lon": 76.9947731,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Kumaran Hospital, Coimbatore",
+            "osm_id": "6936359967",
+            "lat": 11.0150812,
+            "lon": 76.95132,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Sankara Eye Hospital, Coimbatore",
+            "osm_id": "6936443894",
+            "lat": 11.0133673,
+            "lon": 76.9553728,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Madurai Eye Center",
+            "osm_id": "6936609173",
+            "lat": 11.0137122,
+            "lon": 76.951316,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Vega Ent Hospital",
+            "osm_id": "6936663154",
+            "lat": 11.0142295,
+            "lon": 76.9437897,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Spt Hospitals",
+            "osm_id": "6936677079",
+            "lat": 11.0143493,
+            "lon": 76.9614293,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Dr K Padmavathy Hospital",
+            "osm_id": "6936695107",
+            "lat": 11.0081878,
+            "lon": 76.9578948,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "V. G. Hospital, Thudiyalur",
+            "osm_id": "6936696197",
+            "lat": 11.0706896,
+            "lon": 76.9420054,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Sri Vishnu Priyaa Hospitals Pvt Ltd",
+            "osm_id": "6936708011",
+            "lat": 11.036949,
+            "lon": 76.927958,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Aparna Hospital",
+            "osm_id": "6936708037",
+            "lat": 10.9561995,
+            "lon": 76.9541618,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Snekaram Multi Specality Hospital",
+            "osm_id": "6936708084",
+            "lat": 10.987562,
+            "lon": 76.9358088,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Maruthi Hospital, Coimbatore",
+            "osm_id": "6936794080",
+            "lat": 11.0031531,
+            "lon": 76.9513019,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "K. J. Hospital",
+            "osm_id": "6936988344",
+            "lat": 10.9707765,
+            "lon": 76.9564471,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Roselet Medical ObgandSurgical Centre",
+            "osm_id": "6937401730",
+            "lat": 11.0177943,
+            "lon": 76.9612482,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Sruti Hospitals",
+            "osm_id": "6937527640",
+            "lat": 11.0060677,
+            "lon": 76.9525994,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Shree Sivaa Hospital",
+            "osm_id": "7210911318",
+            "lat": 11.0450728,
+            "lon": 76.9856121,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Dr. BRJ Ortho Centre",
+            "osm_id": "7210924997",
+            "lat": 11.0340354,
+            "lon": 76.9512209,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Geethasree Hospital, Coimbatore",
+            "osm_id": "7257155919",
+            "lat": 11.07196,
+            "lon": 77.002444,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "J.M.Hospital, Edayarpalayam",
+            "osm_id": "7257155935",
+            "lat": 11.04984,
+            "lon": 76.918862,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "AR Medical Centre",
+            "osm_id": "7257155938",
+            "lat": 11.04788,
+            "lon": 76.971976,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Kamalaprakasam, Kalapatti",
+            "osm_id": "7257155948",
+            "lat": 11.0778,
+            "lon": 77.035681,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Coimbatore Medical College Hospital",
+            "osm_id": "7257155951",
+            "lat": 11.0289285,
+            "lon": 77.0237553,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "SS Hospital Coimbatore",
+            "osm_id": "7257155969",
+            "lat": 11.04761,
+            "lon": 77.000115,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Hem Hospital- Thudiaylur, Coimbatore",
+            "osm_id": "7257155982",
+            "lat": 11.0757442,
+            "lon": 76.9424139,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Harini Shravan, Coimbatore",
+            "osm_id": "7257156002",
+            "lat": 11.0703318,
+            "lon": 77.0005452,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Ramana Gounder Medical Trust Hospital",
+            "osm_id": "7257156011",
+            "lat": 11.0753938,
+            "lon": 76.939234,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Bishop Walsh Memorial Hospital, Coimbatore",
+            "osm_id": "7257156015",
+            "lat": 11.07251,
+            "lon": 76.871537,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Malar Hpl Goundanpalayam",
+            "osm_id": "7257156017",
+            "lat": 11.0437293,
+            "lon": 76.9475494,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Sai Hospital",
+            "osm_id": "7257156018",
+            "lat": 11.0904781,
+            "lon": 76.9383967,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Pavithra Medical Centre",
+            "osm_id": "7257156021",
+            "lat": 11.08088,
+            "lon": 76.869337,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "V.R.Hospital, Coimbatore",
+            "osm_id": "7257156023",
+            "lat": 11.05642,
+            "lon": 77.001972,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Sree Subiksha Hospital",
+            "osm_id": "7257156045",
+            "lat": 11.0287,
+            "lon": 76.897449,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Vimal Jothi Hospital",
+            "osm_id": "7257156048",
+            "lat": 11.0892,
+            "lon": 77.008366,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "I.J.Hospital, Kuniayamuthur, Coimbatore",
+            "osm_id": "7257166815",
+            "lat": 10.95365,
+            "lon": 76.955989,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Abirami Hospital, Coimbatore",
+            "osm_id": "7257166877",
+            "lat": 10.95254,
+            "lon": 76.973201,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Ganapathy Pc Sundarapuram,",
+            "osm_id": "7257166879",
+            "lat": 10.9521673,
+            "lon": 76.9758815,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Ponnaiah Hospital",
+            "osm_id": "7257183906",
+            "lat": 11.0108047,
+            "lon": 76.9530054,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Rani Nursing Home, Selvapuram, Coimbatore",
+            "osm_id": "7257183907",
+            "lat": 10.9871756,
+            "lon": 76.9392029,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Shree Hospital, Puliakulam, Coimbatore",
+            "osm_id": "7257183911",
+            "lat": 11.0064832,
+            "lon": 76.9914482,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Sri Meenakshi Hospital, Kuniamuthur",
+            "osm_id": "7257183913",
+            "lat": 10.9567349,
+            "lon": 76.9544328,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Shanmuga Hospital Rs Puram",
+            "osm_id": "7257183914",
+            "lat": 11.0029,
+            "lon": 76.948869,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Singanallur Government Hospital",
+            "osm_id": "7257183916",
+            "lat": 11.0011,
+            "lon": 77.033733,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Podanur Government Hospital",
+            "osm_id": "7257183917",
+            "lat": 10.9664096,
+            "lon": 76.9870623,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Medwin Hospital, Coimbatore",
+            "osm_id": "7257183920",
+            "lat": 10.9972946,
+            "lon": 77.0051728,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Sudha Hospital",
+            "osm_id": "7257183925",
+            "lat": 11.0168278,
+            "lon": 76.9758131,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "I.C.C Hospital For Women & Children, Coimbatore",
+            "osm_id": "7257183926",
+            "lat": 10.9958251,
+            "lon": 76.9634777,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Government Hospital, Kuruchi",
+            "osm_id": "7257183942",
+            "lat": 10.9638671,
+            "lon": 76.97122,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Peoples Medical Centre, Coimbatore",
+            "osm_id": "7257183943",
+            "lat": 11.0217448,
+            "lon": 77.0603524,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "VGM Hospital, Coimbatore",
+            "osm_id": "7257183946",
+            "lat": 10.99819,
+            "lon": 77.014447,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Roselet Medical Centre,Coimbatore",
+            "osm_id": "7257183959",
+            "lat": 11.01005,
+            "lon": 77.008874,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Sabari Hospital, Coimbatore",
+            "osm_id": "7257183964",
+            "lat": 11.0254441,
+            "lon": 76.939724,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Raksha Medical Centre",
+            "osm_id": "7257183965",
+            "lat": 10.95665,
+            "lon": 76.987019,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Dr.Manoharan Hospital, Thadagam, Coimbatore",
+            "osm_id": "7257183966",
+            "lat": 11.0067511,
+            "lon": 76.9452484,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Sengottaiah Hospital, Coimbatore",
+            "osm_id": "7257183971",
+            "lat": 11.0225148,
+            "lon": 76.9601579,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Sangeetha Hospital, Kuniyamuthur",
+            "osm_id": "7257183972",
+            "lat": 10.9641042,
+            "lon": 76.9562562,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Seetharam Hospital, Coimbatore",
+            "osm_id": "7257183974",
+            "lat": 10.99941,
+            "lon": 76.948495,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Preethi Medical Centre",
+            "osm_id": "7257183976",
+            "lat": 11.0208486,
+            "lon": 76.9649585,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Ishaiah Hospital, Coimbatore",
+            "osm_id": "7257183978",
+            "lat": 11.0154329,
+            "lon": 76.9779193,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Manu Hospital- Coimbatore",
+            "osm_id": "7257183983",
+            "lat": 10.99147,
+            "lon": 76.976787,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Akshaya Maternity Center",
+            "osm_id": "7257183990",
+            "lat": 11.02567,
+            "lon": 76.902176,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Muniyappa Hospital, Coimbatore",
+            "osm_id": "7257183994",
+            "lat": 11.0060689,
+            "lon": 76.9527967,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Rajalakshmi Hospital, Coimbatore",
+            "osm_id": "7257183995",
+            "lat": 11.0044176,
+            "lon": 76.9503459,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Sivashantha Mother & Child Health Centre",
+            "osm_id": "7257183997",
+            "lat": 11.0231222,
+            "lon": 76.9136781,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Vela Hospital, Singanallur, Coimbatore",
+            "osm_id": "7257183998",
+            "lat": 11.0017873,
+            "lon": 77.0300545,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Guru Kirupa Hospital, Pn Palayam, Coimbatore",
+            "osm_id": "7257184001",
+            "lat": 10.9995252,
+            "lon": 76.9511992,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Sathyan Eye Care Hospital & Coimbatore Glaucoma Foundation",
+            "osm_id": "7257184003",
+            "lat": 10.9980405,
+            "lon": 77.0009615,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "St. Mary's Hospital",
+            "osm_id": "7257184008",
+            "lat": 10.9626641,
+            "lon": 76.98594,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Revathi Hospital, Selvapuram",
+            "osm_id": "7257184012",
+            "lat": 10.9882483,
+            "lon": 76.9400963,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Nehru Urology Centre",
+            "osm_id": "7257184018",
+            "lat": 11.0248525,
+            "lon": 76.9943296,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Om Sakthi Hospital, Coimbatore",
+            "osm_id": "7257184021",
+            "lat": 11.00282,
+            "lon": 76.988996,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Sri Bala Medical Centre Hospital",
+            "osm_id": "7257184024",
+            "lat": 10.9967187,
+            "lon": 76.9954568,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Santhiya Hospital",
+            "osm_id": "7257184026",
+            "lat": 10.9950877,
+            "lon": 76.9746602,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Devi Hospital",
+            "osm_id": "7343511629",
+            "lat": 11.0253792,
+            "lon": 76.9381035,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Sumith Hospital",
+            "osm_id": "7844009703",
+            "lat": 11.0387262,
+            "lon": 76.9228367,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Ranjith Dental Hospital",
+            "osm_id": "7844009706",
+            "lat": 11.038389,
+            "lon": 76.926209,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Rukmani Ammal Hospital",
+            "osm_id": "7844009710",
+            "lat": 11.025042,
+            "lon": 76.9439008,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Onecare Ortho Hospital",
+            "osm_id": "7844009711",
+            "lat": 11.026568,
+            "lon": 76.948798,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Raaj Dental Hospital",
+            "osm_id": "7844009721",
+            "lat": 11.0263447,
+            "lon": 76.9423976,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Aswin Hospital",
+            "osm_id": "7844009725",
+            "lat": 11.0255271,
+            "lon": 76.9515108,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Sakthi Fertility Hospital",
+            "osm_id": "7844009743",
+            "lat": 11.0255323,
+            "lon": 76.9463747,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Masani Hospital",
+            "osm_id": "7844009748",
+            "lat": 11.0246928,
+            "lon": 76.9435571,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Kandaswamy Sidhq Hospital",
+            "osm_id": "7844009749",
+            "lat": 11.026645,
+            "lon": 76.945987,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "P S G Cules Hospital",
+            "osm_id": "7844009754",
+            "lat": 11.045772,
+            "lon": 76.92291,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Paavai ENT Hospital",
+            "osm_id": "7844009763",
+            "lat": 11.0270905,
+            "lon": 76.9416551,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Vishnupriys Hospital",
+            "osm_id": "7844009765",
+            "lat": 11.0365363,
+            "lon": 76.9317515,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Srinivas Hospital",
+            "osm_id": "7844058258",
+            "lat": 11.013248,
+            "lon": 77.0192485,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Chycartist Hospital",
+            "osm_id": "7844058270",
+            "lat": 11.0160902,
+            "lon": 77.0202551,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Dr. Felix Hospital",
+            "osm_id": "7844058299",
+            "lat": 11.0044086,
+            "lon": 77.0348661,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Vishnu Hospital",
+            "osm_id": "7844131964",
+            "lat": 11.0076298,
+            "lon": 76.9576345,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Arc Fertility Hospital",
+            "osm_id": "7844131967",
+            "lat": 11.012539,
+            "lon": 76.986166,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Rex Ortho Hospital",
+            "osm_id": "7844131968",
+            "lat": 11.008405,
+            "lon": 76.956396,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "N R Hospital",
+            "osm_id": "7844131974",
+            "lat": 11.0112326,
+            "lon": 76.9548289,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Parvathy Hospitals",
+            "osm_id": "7844131975",
+            "lat": 11.01472,
+            "lon": 76.952299,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Srigiri Ayurvedic Hospital",
+            "osm_id": "7844131977",
+            "lat": 11.0081541,
+            "lon": 76.9578763,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "K.B.S. Hospital",
+            "osm_id": "7844131978",
+            "lat": 11.0157437,
+            "lon": 76.9842202,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Dr. G. Thiagarajan's Memorial Hospital",
+            "osm_id": "7844131979",
+            "lat": 11.00534,
+            "lon": 76.989401,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Ramvel Hospital",
+            "osm_id": "7844131980",
+            "lat": 10.9958212,
+            "lon": 76.9963939,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Sathya Medical Centre & Hospital",
+            "osm_id": "7844131982",
+            "lat": 11.0238937,
+            "lon": 76.9582121,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Dr. K Shitra Hospital",
+            "osm_id": "7844131983",
+            "lat": 11.0052314,
+            "lon": 76.9555303,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Ramakrishna Hospital",
+            "osm_id": "7844131986",
+            "lat": 11.0207084,
+            "lon": 76.972413,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Seethalakshmi Maternity Hospital",
+            "osm_id": "7844131987",
+            "lat": 11.0065379,
+            "lon": 76.9600631,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Sri Vishnu Priya Hospital",
+            "osm_id": "7844131988",
+            "lat": 10.998711,
+            "lon": 76.951222,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Arun Urology Hospital",
+            "osm_id": "7844131989",
+            "lat": 11.0143168,
+            "lon": 76.9449938,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Vennila Hospital",
+            "osm_id": "7844131991",
+            "lat": 10.9901191,
+            "lon": 76.9421502,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "R.S Hospital",
+            "osm_id": "7844131992",
+            "lat": 11.0091279,
+            "lon": 76.954667,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Welcare Hospital",
+            "osm_id": "7844131994",
+            "lat": 10.989403,
+            "lon": 76.961714,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Becker Manual Hospital",
+            "osm_id": "7844131995",
+            "lat": 11.020659,
+            "lon": 76.968611,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Narmada Hospital",
+            "osm_id": "7844131998",
+            "lat": 10.9967758,
+            "lon": 77.0071075,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Rao Hospital",
+            "osm_id": "7844131999",
+            "lat": 11.0131526,
+            "lon": 76.948405,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Kamala Prakash Hospital",
+            "osm_id": "7844132000",
+            "lat": 11.007283,
+            "lon": 76.956267,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Rafa Hospital",
+            "osm_id": "7844132001",
+            "lat": 11.007011,
+            "lon": 76.992439,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Subu Hospital",
+            "osm_id": "7844132002",
+            "lat": 10.9920096,
+            "lon": 76.9520898,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Rajagambiram Dental Hospital",
+            "osm_id": "7844132003",
+            "lat": 10.9923475,
+            "lon": 76.9559691,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Iswarya Hospital",
+            "osm_id": "7844132004",
+            "lat": 11.0002483,
+            "lon": 76.9518169,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Sri Guru Hospital",
+            "osm_id": "7844132009",
+            "lat": 10.9920855,
+            "lon": 76.9574858,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "PGS Hospital",
+            "osm_id": "7844132010",
+            "lat": 11.0153485,
+            "lon": 76.9524368,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "K Jagathnathan Hospital",
+            "osm_id": "7844132014",
+            "lat": 10.999154,
+            "lon": 76.951549,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Mak Hospital",
+            "osm_id": "7844132016",
+            "lat": 11.008435,
+            "lon": 76.9580134,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Arunai Hospitals",
+            "osm_id": "12285349823",
+            "lat": 11.0182403,
+            "lon": 76.9246,
+            "emergency": "",
+            "phone": "+91 422 453 0142",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Coimbatore Corporation Urban Health Centre",
+            "osm_id": "13390367103",
+            "lat": 10.9757337,
+            "lon": 76.9959721,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Gobi Medical Centre",
+            "osm_id": "13645086001",
+            "lat": 11.0572211,
+            "lon": 76.9709821,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Deepam Hospital, Ramanathapuram",
+            "osm_id": "48846712",
+            "lat": 10.9965354,
+            "lon": 77.0039274,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Kalpana Medical Centre",
+            "osm_id": "133035201",
+            "lat": 11.0469909,
+            "lon": 76.9477217,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Ganga Hospital",
+            "osm_id": "133072618",
+            "lat": 11.026129,
+            "lon": 76.9524873,
+            "emergency": "yes",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Sankara Eye Hospital",
+            "osm_id": "133736673",
+            "lat": 11.0558646,
+            "lon": 76.9977839,
+            "emergency": "yes",
+            "phone": "0422 2666450",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Dr. Arjun Hospital",
+            "osm_id": "155623691",
+            "lat": 10.9843661,
+            "lon": 76.930203,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Unknown Hospital",
+            "osm_id": "172098707",
+            "lat": 11.0112862,
+            "lon": 76.9803545,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Gem Hospital, Coimbatore",
+            "osm_id": "193354097",
+            "lat": 10.9996629,
+            "lon": 76.9953933,
+            "emergency": "yes",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Kovai Medical Centre and Hospital",
+            "osm_id": "356877719",
+            "lat": 11.0426077,
+            "lon": 77.0406074,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Coimbatore Medical College Hospital",
+            "osm_id": "377993519",
+            "lat": 10.9964129,
+            "lon": 76.9702365,
+            "emergency": "yes",
+            "phone": "",
+            "website": "https://www.cmccbe.ac.in/cmccbe/",
+            "operator": ""
+        },
+        {
+            "name": "Coimbatore Diabetes Foundation",
+            "osm_id": "380074539",
+            "lat": 11.0344771,
+            "lon": 76.8765145,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Airforce Hospital",
+            "osm_id": "442528852",
+            "lat": 11.0056673,
+            "lon": 76.9860901,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Anurag Hospital",
+            "osm_id": "464308337",
+            "lat": 11.006956,
+            "lon": 77.011889,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Rajam Medical Centre & Hospital",
+            "osm_id": "497317279",
+            "lat": 10.9487627,
+            "lon": 76.9776849,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Sri Balaji Hospitals",
+            "osm_id": "497317281",
+            "lat": 10.953798,
+            "lon": 76.9736085,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Abinand Hospital",
+            "osm_id": "497318359",
+            "lat": 10.954295,
+            "lon": 76.9731819,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "FIMS Hospitals | Best Multispeciality Hospital In Sonipat",
+            "osm_id": "497318360",
+            "lat": 10.957909,
+            "lon": 76.9724703,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "NRP Hospitals",
+            "osm_id": "497318366",
+            "lat": 10.9581915,
+            "lon": 76.9710523,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Seetharam Hospital",
+            "osm_id": "497325630",
+            "lat": 10.9868836,
+            "lon": 76.9335496,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Snekaram Hospital",
+            "osm_id": "497325631",
+            "lat": 10.9873439,
+            "lon": 76.9357994,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Medicine Point",
+            "osm_id": "498985099",
+            "lat": 10.9681553,
+            "lon": 76.9785734,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Coimbatore Child Trust Hospital",
+            "osm_id": "498988417",
+            "lat": 10.9978875,
+            "lon": 77.0170667,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Sri Ramakrishna Hospital",
+            "osm_id": "506409030",
+            "lat": 11.0236015,
+            "lon": 76.976512,
+            "emergency": "yes",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "St. Marys Hospital",
+            "osm_id": "640746755",
+            "lat": 10.9625619,
+            "lon": 76.9865689,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Global Ortho & Trauma Hospital",
+            "osm_id": "651641257",
+            "lat": 11.0108233,
+            "lon": 76.9661375,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Sundakamuthur Government Hospital",
+            "osm_id": "676200805",
+            "lat": 10.9559428,
+            "lon": 76.9241442,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "GMC & ESI Hospitals",
+            "osm_id": "678830304",
+            "lat": 11.0087369,
+            "lon": 77.0227178,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Dr.Sengaliappan Nursing Home, Coimbatore",
+            "osm_id": "686744601",
+            "lat": 11.0272375,
+            "lon": 76.9501348,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Unknown Hospital",
+            "osm_id": "735262108",
+            "lat": 11.0002506,
+            "lon": 76.9716078,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Sri Ramakrishna Hospital, Coimbatore",
+            "osm_id": "738467952",
+            "lat": 11.0231718,
+            "lon": 76.9776867,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "N M Hospital",
+            "osm_id": "739720633",
+            "lat": 10.9981109,
+            "lon": 76.9994702,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Kovai Diabetes Speciality Centre and Hospital",
+            "osm_id": "740151967",
+            "lat": 11.0159446,
+            "lon": 76.961461,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "M. V. Eye Care Centre",
+            "osm_id": "740646248",
+            "lat": 11.0128979,
+            "lon": 76.962954,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Dr N S Palaniappan Nursing Home",
+            "osm_id": "740883509",
+            "lat": 11.0078696,
+            "lon": 76.9662789,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Seesha Karunya Community Hospital",
+            "osm_id": "740884933",
+            "lat": 11.0160493,
+            "lon": 76.9594132,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Ganga Medical Centre and Hospitals Pvt. Ltd ,Ramnagar",
+            "osm_id": "741020155",
+            "lat": 11.0158471,
+            "lon": 76.9595292,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Jeevan Clinic and Hospital, Coimbatore",
+            "osm_id": "777638186",
+            "lat": 11.0199095,
+            "lon": 76.9670503,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Coimbatore Corporation Maternity Centre",
+            "osm_id": "777638193",
+            "lat": 11.0068131,
+            "lon": 76.9669045,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Aiswarya Clinic",
+            "osm_id": "840630245",
+            "lat": 11.0228396,
+            "lon": 76.9655596,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Nithya Hospital",
+            "osm_id": "840630290",
+            "lat": 11.0210653,
+            "lon": 76.9665454,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Krishna Nursing Home",
+            "osm_id": "1240248192",
+            "lat": 11.0153062,
+            "lon": 76.9595053,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "AB Child Care Hospital",
+            "osm_id": "1252960440",
+            "lat": 11.0006913,
+            "lon": 77.028744,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Martin Homoeopathy",
+            "osm_id": "1252961263",
+            "lat": 11.0051006,
+            "lon": 77.027114,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Punarnava Ayurveda",
+            "osm_id": "1311199045",
+            "lat": 10.9830163,
+            "lon": 76.9995841,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Health Center & EDC",
+            "osm_id": "1481158131",
+            "lat": 11.0327607,
+            "lon": 77.0354641,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Bragathi Hospital",
+            "osm_id": "1487718752",
+            "lat": 11.0215972,
+            "lon": 76.9770891,
+            "emergency": "",
+            "phone": "",
+            "website": "https://bragathihospital.com",
+            "operator": ""
+        },
+        {
+            "name": "Heart care Hospital - Dr. Balaji",
+            "osm_id": "1528969449",
+            "lat": 11.0142508,
+            "lon": 77.0044787,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Sarvam Institute of ENT & Research",
+            "osm_id": "1528973359",
+            "lat": 10.998825,
+            "lon": 76.9996666,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Unknown Hospital",
+            "osm_id": "2294115",
+            "lat": 11.0825607,
+            "lon": 76.9973976,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "G. Kuppuswamy Naidu Memorial Hospital",
+            "osm_id": "2295479",
+            "lat": 11.0119015,
+            "lon": 76.980748,
+            "emergency": "yes",
+            "phone": "04222245000",
+            "website": "https://www.gknmhospital.org/",
+            "operator": ""
+        },
+        {
+            "name": "Unknown Hospital",
+            "osm_id": "2295480",
+            "lat": 11.0128666,
+            "lon": 76.9803086,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        },
+        {
+            "name": "Aravind Eye Hospital - Peelamedu, Coimbatore",
+            "osm_id": "11817364",
+            "lat": 11.0356018,
+            "lon": 77.0328714,
+            "emergency": "",
+            "phone": "",
+            "website": "",
+            "operator": ""
+        }
+    ]
+}

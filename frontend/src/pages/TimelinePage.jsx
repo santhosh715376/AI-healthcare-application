@@ -71,7 +71,7 @@ export default function TimelinePage({ patientId = '9876543210', doctorId = null
       <div className="timeline-header-bar">
         <div className="timeline-title-group">
           <span className="timeline-main-title">📋 Patient Prescription Timeline</span>
-          <span className="timeline-patient-badge">Patient ID: pat-1001</span>
+          <span className="timeline-patient-badge">Patient Lookup: {patientId}</span>
         </div>
         <button className="action-btn" onClick={fetchTimeline} style={{ padding: '6px 14px', fontSize: '0.82rem' }}>
           🔄 Refresh Record

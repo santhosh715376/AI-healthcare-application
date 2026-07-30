@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import PrescriptionCard from '../components/PrescriptionCard.jsx';
 import ChatPage from './ChatPage.jsx';
 import TimelinePage from './TimelinePage.jsx';
+import HospitalMap from '../components/HospitalMap.jsx';
+import EmergencyFilterPane from '../components/EmergencyFilterPane.jsx';
 
 export default function PatientPortal({ currentUser }) {
   const patientMobile = currentUser?.phone || '9876543210';
   const patientId = currentUser?.id || '100001';
-  const [activeSubTab, setActiveSubTab] = useState('ocr'); // 'ocr' | 'chat' | 'timeline'
+  const [activeSubTab, setActiveSubTab] = useState('ocr'); // 'ocr' | 'chat' | 'timeline' | 'mapping'
 
   // OCR Upload State
   const [selectedFile, setSelectedFile] = useState(null);
@@ -14,6 +16,73 @@ export default function PatientPortal({ currentUser }) {
   const [ocrParsedData, setOcrParsedData] = useState(null);
   const [loadingOcr, setLoadingOcr] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
+
+  // Emergency Spatial Mapping State
+  const [searchQuery, setSearchQuery] = useState('');
+  const [radiusKm, setRadiusKm] = useState(15);
+  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [hospitals, setHospitals] = useState([]);
+  const [selectedHospitalId, setSelectedHospitalId] = useState(null);
+  const [userLocation, setUserLocation] = useState(null);
+  const [locationEnabled, setLocationEnabled] = useState(false);
+
+  const cardRefs = useRef({});
+
+  // Request Browser Geolocation
+  const requestLocation = () => {
+    if ('geolocation' in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          setUserLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+          setLocationEnabled(true);
+        },
+        (err) => {
+          console.warn('Geolocation access denied or unavailable:', err);
+          setLocationEnabled(false);
+        },
+        { enableHighAccuracy: true, timeout: 10000 }
+      );
+    }
+  };
+
+  useEffect(() => {
+    requestLocation();
+  }, []);
+
+  // Fetch Hospitals from FastAPI SQLite Endpoint
+  const fetchHospitals = async () => {
+    try {
+      const lat = userLocation ? userLocation.lat : 11.0168;
+      const lng = userLocation ? userLocation.lng : 76.9558;
+      let url = `http://localhost:8000/api/hospitals?lat=${lat}&lng=${lng}&radiusKm=${radiusKm}`;
+
+      if (searchQuery.trim()) {
+        url += `&query=${encodeURIComponent(searchQuery.trim())}`;
+      }
+      if (selectedCategory && selectedCategory !== 'All') {
+        url += `&specialty=${encodeURIComponent(selectedCategory)}`;
+      }
+
+      const res = await fetch(url);
+      const data = await res.json();
+      setHospitals(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error('Error fetching spatial hospital records:', err);
+    }
+  };
+
+  useEffect(() => {
+    if (activeSubTab === 'mapping') {
+      fetchHospitals();
+    }
+  }, [activeSubTab, radiusKm, searchQuery, selectedCategory, userLocation]);
+
+  const handleSelectHospital = (id) => {
+    setSelectedHospitalId(id);
+    if (cardRefs.current[id]) {
+      cardRefs.current[id].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  };
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -41,8 +110,8 @@ export default function PatientPortal({ currentUser }) {
       const json = await res.json();
       setOcrParsedData(json);
     } catch (err) {
-      console.error('Gemini OCR Error:', err);
-      alert('Error parsing paper slip with Gemini OCR.');
+      console.error('Error parsing prescription OCR:', err);
+      alert('Failed to parse paper prescription image.');
     } finally {
       setLoadingOcr(false);
     }
@@ -51,10 +120,16 @@ export default function PatientPortal({ currentUser }) {
   const handleSaveOcrToTimeline = async () => {
     if (!ocrParsedData) return;
     try {
+      const payloadToSave = {
+        ...ocrParsedData,
+        patientId: currentUser?.id ? String(currentUser.id) : '100001',
+        patientPhone: currentUser?.phone || '9876543210',
+      };
+
       await fetch('http://localhost:8000/api/timeline/save', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(ocrParsedData),
+        body: JSON.stringify(payloadToSave),
       });
       setSaveSuccess(true);
       setTimeout(() => setSaveSuccess(false), 4000);
@@ -65,31 +140,7 @@ export default function PatientPortal({ currentUser }) {
   };
 
   return (
-    <div className="patient-portal-container">
-      {/* Top Patient Header Bar */}
-      <div style={{
-        backgroundColor: '#1f2937',
-        padding: '12px 20px',
-        borderBottom: '1px solid #374151',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <span style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#10b981' }}>👤 Patient Health Portal</span>
-          <span style={{
-            backgroundColor: '#064e3b',
-            color: '#a7f3d0',
-            fontSize: '0.78rem',
-            padding: '2px 8px',
-            borderRadius: '12px',
-            fontWeight: 600
-          }}>
-            Phone: {patientMobile} (ID: {patientId})
-          </span>
-        </div>
-      </div>
-
+    <div className="patient-portal-container" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       {/* Sub-tab Navigation */}
       <div style={{
         display: 'flex',
@@ -115,6 +166,12 @@ export default function PatientPortal({ currentUser }) {
           onClick={() => setActiveSubTab('timeline')}
         >
           📋 My Medical Records Timeline
+        </button>
+        <button
+          className={`tab-btn ${activeSubTab === 'mapping' ? 'active' : ''}`}
+          onClick={() => setActiveSubTab('mapping')}
+        >
+          🗺️ Mapping
         </button>
       </div>
 
@@ -178,7 +235,7 @@ export default function PatientPortal({ currentUser }) {
                       justifyContent: 'center'
                     }}
                   >
-                    🏥 Save to My Timeline
+                    🏥 Confirm & Save to Patient Timeline Record
                   </button>
                 </div>
               </>
@@ -214,6 +271,36 @@ export default function PatientPortal({ currentUser }) {
 
       {/* SUB-TAB 3: Patient Medical History Timeline */}
       {activeSubTab === 'timeline' && <TimelinePage patientId={patientMobile} />}
+
+      {/* SUB-TAB 4: Emergency Geospatial Hospital Discovery Mapping */}
+      {activeSubTab === 'mapping' && (
+        <div style={{ flex: 1, display: 'flex', overflow: 'hidden', height: 'calc(100vh - 120px)' }}>
+          <EmergencyFilterPane
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            radiusKm={radiusKm}
+            onRadiusChange={setRadiusKm}
+            selectedCategory={selectedCategory}
+            onCategoryChange={setSelectedCategory}
+            hospitals={hospitals}
+            selectedHospitalId={selectedHospitalId}
+            onSelectHospital={handleSelectHospital}
+            locationEnabled={locationEnabled}
+            onRequestLocation={requestLocation}
+            cardRefs={cardRefs}
+          />
+          <div style={{ flex: 1, height: '100%', position: 'relative' }}>
+            <HospitalMap
+              hospitals={hospitals}
+              center={userLocation || { lat: 11.0168, lng: 76.9558 }}
+              radiusKm={radiusKm}
+              userLocation={userLocation}
+              selectedHospitalId={selectedHospitalId}
+              onSelectHospital={handleSelectHospital}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -264,7 +264,8 @@ export default function DoctorPortal({ currentUser }) {
 
       {/* SUB-TAB 1: Voice STT Capture */}
       {activeSubTab === 'prescribe' && (
-        <div className="workspace-split">
+        <div className="workspace-split" style={{ position: 'relative' }}>
+          {/* Left Pane — Transcript Editor */}
           <div className="pane">
             <div className="pane-header">
               <span className="pane-title">📝 Doctor Spoken Transcript Editor</span>
@@ -282,6 +283,7 @@ export default function DoctorPortal({ currentUser }) {
             />
           </div>
 
+          {/* Right Pane — Auto-Formatted Prescription Card */}
           <div className="pane">
             <div className="pane-header">
               <span className="pane-title">✨ Auto-Formatted Header-Body-Tail Card</span>
@@ -328,21 +330,44 @@ export default function DoctorPortal({ currentUser }) {
             )}
           </div>
 
-          {/* Floating Push to Speak Button */}
-          <div className="mic-floating-bar">
+          {/* Floating Mic Pill Overlay — Floating in front in bottom middle between both panes */}
+          <div style={{
+            position: 'absolute',
+            bottom: '24px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            zIndex: 1000,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px',
+            backgroundColor: '#1f2937',
+            border: '1px solid #3b82f6',
+            padding: '8px 22px',
+            borderRadius: '30px',
+            boxShadow: '0 10px 30px rgba(0, 0, 0, 0.8)',
+            backdropFilter: 'blur(8px)'
+          }}>
             <button
               className={`mic-button ${isRecording ? 'recording' : ''}`}
               onClick={toggleRecording}
-              title="Click Push to Speak"
+              title="Push to Speak"
+              style={{ width: '48px', height: '48px', fontSize: '1.4rem' }}
             >
               {isRecording ? '⏹️' : '🎙️'}
             </button>
-            <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#e5e7eb' }}>
-              {isRecording ? 'Doctor Mic Active... (Speaking)' : 'Doctor Push to Speak'}
+            <span style={{
+              fontSize: '0.88rem',
+              fontWeight: 700,
+              color: isRecording ? '#f87171' : '#e5e7eb',
+              letterSpacing: '0.02em',
+              whiteSpace: 'nowrap'
+            }}>
+              {isRecording ? '🔴 Doctor Mic Active...' : '🎙️ Doctor Push to Speak'}
             </span>
           </div>
         </div>
       )}
+
 
       {/* SUB-TAB 2: Doctor Clinical Research Chatbot */}
       {activeSubTab === 'clinical_chat' && (

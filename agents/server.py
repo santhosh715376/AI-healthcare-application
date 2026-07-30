@@ -237,9 +237,15 @@ def auth_login(payload: LoginRequest, db: Session = Depends(get_db)):
 # Import graph modules
 from graphs.prescription_parser import parse_prescription_text, parse_prescription_image_gemini
 from graphs.specialty_suggestion import suggest_specialty_groq
-from graphs.chatbot import chat_with_groq, clear_session
-from graphs.timeline import save_prescription_to_timeline, get_patient_timeline
-from graphs.context_agent import build_patient_health_context
+from graphs.patient_advisor_agent import process_patient_advisor_pipeline
+
+class PatientAdvisorRequest(BaseModel):
+    message: str = Field(description="Patient message or /slash command")
+    patientName: str = Field(default="Patient")
+    patientPhone: str = Field(default="9876543210")
+    pdfContext: Optional[str] = Field(default=None)
+    lat: float = Field(default=11.0168)
+    lng: float = Field(default=76.9558)
 
 class SpecialtyRequest(BaseModel):
     symptoms: str = Field(description="Free-text patient symptom description")
@@ -266,9 +272,98 @@ class HospitalRankRequest(BaseModel):
     priorityWeights: Dict[str, float] = Field(default_factory=lambda: {"distance": 0.4, "insurance": 0.3, "emergency": 0.3})
     patientLocation: Dict[str, float] = Field(default_factory=lambda: {"lat": 11.0168, "lng": 76.9558})
 
+import math
+from database import DoctorDB, PatientDB, PrescriptionDB, HospitalDB, get_db
+
+def haversine_distance_km(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
+    R = 6371.0
+    dlat = math.radians(lat2 - lat1)
+    dlon = math.radians(lon2 - lon1)
+    a = math.sin(dlat / 2) ** 2 + math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) * math.sin(dlon / 2) ** 2
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+    return round(R * c, 1)
+
 @app.get("/")
 def root():
     return {"status": "online", "server": "Agents FastAPI Server", "models": ["Groq Llama 3.3 70B", "Groq Whisper", "Gemini 2.0 Flash"]}
+
+@app.get("/api/hospitals")
+def get_hospitals_endpoint(
+    lat: float = 11.0168,
+    lng: float = 76.9558,
+    radiusKm: float = 15.0,
+    query: Optional[str] = None,
+    specialty: Optional[str] = None,
+    limit: Optional[int] = 500,
+    db: Session = Depends(get_db)
+):
+    """
+    Queries real-time hospital spatial records from SQLite database,
+    computes Haversine radial distance relative to patient GPS coordinates,
+    and returns all hospital data points matching the user-defined distance range.
+    """
+    hospitals_query = db.query(HospitalDB).all()
+    results = []
+
+    for h in hospitals_query:
+        dist = haversine_distance_km(lat, lng, h.latitude, h.longitude)
+        if dist > radiusKm:
+            continue
+
+        if query and query.strip():
+            q_clean = query.strip().lower()
+            if q_clean not in h.name.lower() and q_clean not in (h.address or "").lower():
+                continue
+
+        if specialty and specialty.strip():
+            s_clean = specialty.strip().lower()
+            if s_clean not in h.category.lower() and s_clean not in (h.specialties or "").lower() and s_clean not in (h.emergency_specialty_24x7 or "").lower():
+                continue
+
+        google_maps_url = f"https://www.google.com/maps/dir/?api=1&destination={h.latitude},{h.longitude}"
+
+        results.append({
+            "id": h.id,
+            "name": h.name,
+            "latitude": h.latitude,
+            "longitude": h.longitude,
+            "location": {"lat": h.latitude, "lng": h.longitude},
+            "beds": h.beds,
+            "emergencySpecialty24x7": h.emergency_specialty_24x7,
+            "bestSector": h.best_sector,
+            "rating": h.rating,
+            "reviewCount": h.review_count,
+            "category": h.category,
+            "specialties": h.specialties,
+            "emergency24x7": h.emergency_24x7,
+            "phone": h.phone,
+            "address": h.address,
+            "reviewSnippet": h.review_snippet,
+            "distanceKm": dist,
+            "googleMapsUrl": google_maps_url
+        })
+
+    results.sort(key=lambda x: x["distanceKm"])
+
+    # Dynamically assign proximity rank (1, 2, 3...) and distanceRange relative to live GPS location
+    final_results = []
+    max_limit = limit if limit else len(results)
+    for idx, item in enumerate(results[:max_limit]):
+        dist = item["distanceKm"]
+        if dist <= 5.0:
+            dist_range = "0–5 km (Immediate Proximity)"
+        elif dist <= 15.0:
+            dist_range = "5–15 km (Nearby District Range)"
+        elif dist <= 30.0:
+            dist_range = "15–30 km (Outer Highway Range)"
+        else:
+            dist_range = "30+ km (Extended District Range)"
+
+        item["rank"] = idx + 1
+        item["distanceRange"] = dist_range
+        final_results.append(item)
+
+    return final_results
 
 @app.post("/api/agents/suggest-specialty")
 def suggest_specialty_endpoint(payload: SpecialtyRequest):
@@ -276,6 +371,21 @@ def suggest_specialty_endpoint(payload: SpecialtyRequest):
     Categorizes patient symptoms into hospital specialties using Groq Llama 3.3 70B.
     """
     return suggest_specialty_groq(payload.symptoms)
+
+@app.post("/api/chat/patient-advisor")
+def patient_advisor_endpoint(payload: PatientAdvisorRequest):
+    """
+    Patient Health Assistant Advisor Endpoint. Supports slash commands (/specialty, /comfort, /diagnostic, /triage, /emergency),
+    transient PDF analysis, organ-to-sector hospital mapping, and timeline medicine guardrails.
+    """
+    return process_patient_advisor_pipeline(
+        user_message=payload.message,
+        patient_name=payload.patientName,
+        patient_phone=payload.patientPhone,
+        pdf_context=payload.pdfContext,
+        user_lat=payload.lat,
+        user_lng=payload.lng
+    )
 
 @app.post("/api/prescriptions/parse")
 def parse_prescription_endpoint(payload: PrescriptionTextRequest):
