@@ -48,8 +48,10 @@ def evaluate_drug_interactions(new_medications: List[Dict[str, Any]], patient_id
 
         for rx in rxs:
             try:
-                meds = json.loads(rx.medications_json) if rx.medications_json else []
-                existing_meds.extend(meds)
+                if isinstance(rx.medications_json, list):
+                    existing_meds.extend(rx.medications_json)
+                elif isinstance(rx.medications_json, str):
+                    existing_meds.extend(json.loads(rx.medications_json))
             except Exception:
                 pass
 

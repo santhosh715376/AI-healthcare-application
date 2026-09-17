@@ -5,9 +5,11 @@ import TimelinePage from './TimelinePage.jsx';
 import HospitalMap from '../components/HospitalMap.jsx';
 import EmergencyFilterPane from '../components/EmergencyFilterPane.jsx';
 import PatientAdherencePanel from '../components/PatientAdherencePanel.jsx';
+import { fetchHospitals as fetchHospitalsService } from '../services/hospitalService';
+import { parsePrescriptionImage, savePrescriptionToTimeline } from '../services/prescriptionService';
 
 export default function PatientPortal({ currentUser, onSignOut }) {
-  const patientMobile = currentUser?.phone || '9876543210';
+  const patientMobile = currentUser?.phone_number || currentUser?.phone || '9876543210';
   const patientId = currentUser?.id || '100001';
   const [activeSubTab, setActiveSubTab] = useState('adherence'); // 'adherence' | 'ocr' | 'chat' | 'timeline' | 'mapping'
 
@@ -17,6 +19,7 @@ export default function PatientPortal({ currentUser, onSignOut }) {
   const [ocrParsedData, setOcrParsedData] = useState(null);
   const [loadingOcr, setLoadingOcr] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   // Emergency Spatial Mapping State
   const [searchQuery, setSearchQuery] = useState('');
@@ -55,31 +58,28 @@ export default function PatientPortal({ currentUser, onSignOut }) {
     requestLocation();
   }, []);
 
-  // Fetch Hospitals from FastAPI SQLite Endpoint
-  const fetchHospitals = async () => {
+  // Fetch Hospitals from centralized service
+  const loadHospitals = async () => {
     try {
       const lat = userLocation ? userLocation.lat : 11.0168;
       const lng = userLocation ? userLocation.lng : 76.9558;
-      let url = `http://localhost:8000/api/hospitals?lat=${lat}&lng=${lng}&radiusKm=${radiusKm}`;
-
-      if (searchQuery.trim()) {
-        url += `&query=${encodeURIComponent(searchQuery.trim())}`;
-      }
-      if (selectedCategory && selectedCategory !== 'All') {
-        url += `&specialty=${encodeURIComponent(selectedCategory)}`;
-      }
-
-      const res = await fetch(url);
-      const data = await res.json();
+      const data = await fetchHospitalsService({
+        lat,
+        lng,
+        radiusKm,
+        query: searchQuery.trim(),
+        specialty: selectedCategory !== 'All' ? selectedCategory : '',
+      });
       setHospitals(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error('Error fetching spatial hospital records:', err);
+      setErrorMessage(err.message || 'Failed to load hospital records');
     }
   };
 
   useEffect(() => {
     if (activeSubTab === 'mapping') {
-      fetchHospitals();
+      loadHospitals();
     }
   }, [activeSubTab, radiusKm, searchQuery, selectedCategory, userLocation]);
 
@@ -96,28 +96,23 @@ export default function PatientPortal({ currentUser, onSignOut }) {
       setSelectedFile(file);
       setPreviewUrl(URL.createObjectURL(file));
       setOcrParsedData(null);
+      setErrorMessage('');
     }
   };
 
   const handleParseOcrClick = async () => {
     if (!selectedFile) {
-      alert('Please select a prescription image file first.');
+      setErrorMessage('Please select a prescription image file first.');
       return;
     }
     setLoadingOcr(true);
+    setErrorMessage('');
     try {
-      const formData = new FormData();
-      formData.append('file', selectedFile);
-
-      const res = await fetch('http://localhost:8000/api/prescriptions/parse-image', {
-        method: 'POST',
-        body: formData,
-      });
-      const json = await res.json();
+      const json = await parsePrescriptionImage(selectedFile);
       setOcrParsedData(json);
     } catch (err) {
       console.error('Error parsing prescription OCR:', err);
-      alert('Failed to parse paper prescription image.');
+      setErrorMessage(err.message || 'Failed to parse paper prescription image.');
     } finally {
       setLoadingOcr(false);
     }
@@ -125,28 +120,46 @@ export default function PatientPortal({ currentUser, onSignOut }) {
 
   const handleSaveOcrToTimeline = async () => {
     if (!ocrParsedData) return;
+    setErrorMessage('');
     try {
       const payloadToSave = {
         ...ocrParsedData,
         patientId: currentUser?.id ? String(currentUser.id) : '100001',
-        patientPhone: currentUser?.phone || '9876543210',
+        patientPhone: currentUser?.phone_number || currentUser?.phone || '9876543210',
       };
 
-      await fetch('http://localhost:8000/api/timeline/save', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payloadToSave),
-      });
+      await savePrescriptionToTimeline(payloadToSave);
       setSaveSuccess(true);
       setTimeout(() => setSaveSuccess(false), 4000);
     } catch (err) {
       console.error('Error saving OCR data:', err);
-      alert('Error saving OCR record to timeline.');
+      setErrorMessage(err.message || 'Error saving OCR record to timeline.');
     }
   };
 
   return (
     <div className="patient-portal-container" style={{ display: 'flex', flexDirection: 'column', height: '100%', overflowY: 'auto' }}>
+      {errorMessage && (
+        <div style={{
+          backgroundColor: '#ef444422',
+          border: '1px solid #ef4444',
+          color: '#f87171',
+          padding: '10px 20px',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          fontSize: '0.9rem'
+        }}>
+          <span>⚠️ {errorMessage}</span>
+          <button
+            onClick={() => setErrorMessage('')}
+            style={{ background: 'transparent', border: 'none', color: '#f87171', cursor: 'pointer', fontWeight: 'bold' }}
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
       {/* Sub-tab Navigation */}
       <div style={{
         display: 'flex',

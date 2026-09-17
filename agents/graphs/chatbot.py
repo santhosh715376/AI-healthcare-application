@@ -5,7 +5,7 @@ No RAG, no patient records — pure conversational health information assistant.
 """
 
 import os
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Optional
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -33,10 +33,11 @@ CHAT_SESSIONS: Dict[str, List[Dict[str, str]]] = {}
 MAX_HISTORY = 20  # keep last 20 turns per session
 
 
-def chat_with_groq(session_id: str, user_message: str, patient_id: str = "pat-1001", role: str = "patient") -> str:
+def chat_with_groq(session_id: str, user_message: str, patient_id: Optional[str] = None, role: str = "patient") -> str:
     """
     Sends user_message to Groq Llama 3.3 70B with session history and Timeline Context Agent injection.
     Supports role='doctor' (clinical research mode with RAG) vs role='patient' (strictly guardrailed consumer mode).
+    Sessions are strictly isolated per authenticated user ID: f"{patient_id}:{session_id}".
     """
     groq_key = os.environ.get("GROQ_API_KEY")
     if not groq_key or groq_key.startswith("YOUR_"):
@@ -46,8 +47,11 @@ def chat_with_groq(session_id: str, user_message: str, patient_id: str = "pat-10
     from graphs.context_agent import build_patient_health_context
     from graphs.specialty_suggestion import suggest_specialty_groq
 
+    pid = str(patient_id) if patient_id else "pat-anonymous"
+    scoped_session_key = f"{pid}:{session_id}"
+
     # Fetch Timeline Context Agent Enriched Block
-    context_data = build_patient_health_context(patient_id)
+    context_data = build_patient_health_context(pid)
     timeline_context = context_data.get("systemPromptContext", "")
 
     if role.lower() == "doctor":
@@ -76,10 +80,10 @@ CRITICAL DIRECTIVE: You MUST explicitly advise the user to: "Consult a doctor be
     effective_system_prompt = f"{base_prompt}\n\n{timeline_context}\n\n{specialty_context}"
 
     # Initialize session if new
-    if session_id not in CHAT_SESSIONS:
-        CHAT_SESSIONS[session_id] = []
+    if scoped_session_key not in CHAT_SESSIONS:
+        CHAT_SESSIONS[scoped_session_key] = []
 
-    history = CHAT_SESSIONS[session_id]
+    history = CHAT_SESSIONS[scoped_session_key]
 
     # Append user message
     history.append({"role": "user", "content": user_message})
@@ -87,7 +91,7 @@ CRITICAL DIRECTIVE: You MUST explicitly advise the user to: "Consult a doctor be
     # Trim to last MAX_HISTORY turns
     if len(history) > MAX_HISTORY:
         history = history[-MAX_HISTORY:]
-        CHAT_SESSIONS[session_id] = history
+        CHAT_SESSIONS[scoped_session_key] = history
 
     # Build messages array with effective system prompt
     messages = [{"role": "system", "content": effective_system_prompt}] + history

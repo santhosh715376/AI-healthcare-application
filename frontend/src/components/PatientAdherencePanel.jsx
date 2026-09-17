@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { getPatientAdherence, getPatientProfile, checkinDose } from '../services/adherenceService';
 
 export default function PatientAdherencePanel({ user, onSignOut }) {
   const patientPhone = String(user?.phone_number || user?.phone || '9943953454');
@@ -28,8 +29,7 @@ export default function PatientAdherencePanel({ user, onSignOut }) {
 
   const fetchAdherenceData = () => {
     const cleanPhone = String(user?.id || patientPhone).replace(/\D/g, '') || '100001';
-    fetch(`http://localhost:8000/api/adherence/patient/${cleanPhone}`)
-      .then(res => res.ok ? res.json() : null)
+    getPatientAdherence(cleanPhone)
       .then(data => {
         if (data && data.slots) {
           setAdherenceData({
@@ -46,8 +46,7 @@ export default function PatientAdherencePanel({ user, onSignOut }) {
   useEffect(() => {
     if (!patientPhone) return;
     const cleanPhone = String(patientPhone).replace(/\D/g, '') || '9943953454';
-    fetch(`http://localhost:8000/api/patient/profile?phone=${encodeURIComponent(cleanPhone)}`)
-      .then(res => res.ok ? res.json() : null)
+    getPatientProfile(cleanPhone)
       .then(data => {
         if (data && data.age) {
           setVitals({
@@ -124,20 +123,13 @@ export default function PatientAdherencePanel({ user, onSignOut }) {
 
   const handleCheckIn = async (item) => {
     try {
-      const res = await fetch('http://localhost:8000/api/adherence/checkin', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          schedule_id: item.schedule_id,
-          patient_id: patientId,
-          scheduled_date: item.scheduled_date || new Date().toISOString().split('T')[0],
-          routine_slot: item.routine_slot
-        })
+      await checkinDose({
+        scheduleId: item.schedule_id,
+        patientId: patientId,
+        scheduledDate: item.scheduled_date || new Date().toISOString().split('T')[0],
+        routineSlot: item.routine_slot
       });
-
-      if (res.ok) {
-        fetchAdherenceData(); // Re-sync SQLite adherence state
-      }
+      fetchAdherenceData(); // Re-sync SQLite adherence state
     } catch (e) {
       console.error('Check-in failed:', e);
     }

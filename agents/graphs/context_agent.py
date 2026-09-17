@@ -56,13 +56,19 @@ def get_latest_patient_prescription(patient_identifier: Any) -> Optional[Dict[st
 
         if not rx:
             return None
+        meds = rx.medications_json if isinstance(rx.medications_json, list) else []
+        if isinstance(rx.medications_json, str):
+            try:
+                meds = json.loads(rx.medications_json)
+            except Exception:
+                meds = []
         return {
             "id": rx.id,
             "patient_name": rx.patient_name,
             "doctor_name": rx.doctor_name,
             "hospital_name": rx.hospital_name,
             "recorded_diagnosis": rx.recorded_diagnosis,
-            "medications": json.loads(rx.medications_json) if rx.medications_json else [],
+            "medications": meds,
             "advice": rx.advice,
             "created_at": rx.created_at.strftime("%B %d, %Y") if rx.created_at else "Recent Visit"
         }
@@ -139,3 +145,41 @@ RESPONSE:"""
     except Exception as e:
         print(f"[ContextAgent] Groq API error: {e}")
         return {"response": f"According to your record with {rx_data['doctor_name']} for {rx_data['recorded_diagnosis']}, your prescribed medicines are: {json.dumps(rx_data['medications'])}.", "guardrail_triggered": False}
+
+
+def build_patient_health_context(patient_identifier: Any) -> Dict[str, Any]:
+    """
+    Builds structured, prompt-ready clinical context from the patient's
+    longitudinal timeline for RAG prompt injection and API consumers.
+    """
+    rx_data = get_latest_patient_prescription(patient_identifier)
+    if not rx_data:
+        return {
+            "has_context": False,
+            "systemPromptContext": "No active patient prescription context found.",
+            "patientName": "Patient",
+            "diagnosis": "None",
+            "medications": []
+        }
+
+    med_names = [m.get("name", "") for m in rx_data.get("medications", []) if isinstance(m, dict)]
+    meds_str = ", ".join(med_names) if med_names else "None"
+
+    context_str = f"""
+[PATIENT LONGITUDINAL HEALTH RECORD]
+- Patient Name: {rx_data.get('patient_name', 'Patient')}
+- Prescribing Physician: {rx_data.get('doctor_name', 'Dr. Nithin')} ({rx_data.get('hospital_name', 'KMCH')})
+- Visit Date: {rx_data.get('created_at', 'Recent')}
+- Verified Diagnosis: {rx_data.get('recorded_diagnosis', 'None')}
+- Prescribed Medications: {meds_str}
+- Physician Advice: {rx_data.get('advice', 'Take medications as prescribed.')}
+"""
+    return {
+        "has_context": True,
+        "systemPromptContext": context_str.strip(),
+        "patientName": rx_data.get("patient_name", "Patient"),
+        "diagnosis": rx_data.get("recorded_diagnosis", "None"),
+        "medications": rx_data.get("medications", []),
+        "latestPrescription": rx_data
+    }
+

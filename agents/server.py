@@ -36,7 +36,7 @@ from typing import Dict, Any, List, Optional
 # Initialize SQLite database on startup
 init_db()
 
-app = FastAPI(title="HealthCare AI Agents API", version="1.0.0")
+app = FastAPI(title="HealthCare AI Agents API", version="2.0.0")
 
 # Enable CORS for React frontend
 app.add_middleware(
@@ -46,6 +46,18 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Include Domain-Driven Modular Routers (SOLID: SRP, DIP)
+from api.chat_router import router as chat_router
+from api.hospital_router import router as hospital_router
+from api.timeline_router import router as timeline_router
+from api.adherence_router import router as adherence_router
+
+app.include_router(chat_router)
+app.include_router(hospital_router)
+app.include_router(timeline_router)
+app.include_router(adherence_router)
+
 
 # Request & Auth Models
 class SignupRequest(BaseModel):
@@ -131,7 +143,13 @@ def auth_signup(payload: SignupRequest, db: Session = Depends(get_db)):
         db.commit()
         db.refresh(doctor_entry)
 
-        token = create_access_token({"sub": str(doctor_entry.id), "role": "DOCTOR", "email": doctor_entry.email, "name": doctor_entry.name})
+        token = create_access_token({
+            "sub": str(doctor_entry.id),
+            "role": "DOCTOR",
+            "email": doctor_entry.email,
+            "name": doctor_entry.name,
+            "phone_number": doctor_entry.phone_number
+        })
         return {
             "status": "success",
             "access_token": token,
@@ -183,7 +201,13 @@ def auth_signup(payload: SignupRequest, db: Session = Depends(get_db)):
         db.commit()
         db.refresh(patient_entry)
 
-        token = create_access_token({"sub": str(patient_entry.id), "role": "PATIENT", "email": patient_entry.email, "name": patient_entry.name})
+        token = create_access_token({
+            "sub": str(patient_entry.id),
+            "role": "PATIENT",
+            "email": patient_entry.email,
+            "name": patient_entry.name,
+            "phone_number": patient_entry.phone_number
+        })
         return {
             "status": "success",
             "access_token": token,
@@ -225,7 +249,13 @@ def auth_login(payload: LoginRequest, db: Session = Depends(get_db)):
     ).first()
 
     if doctor and verify_password(payload.password, doctor.password_hash):
-        token = create_access_token({"sub": str(doctor.id), "role": "DOCTOR", "email": doctor.email, "name": doctor.name})
+        token = create_access_token({
+            "sub": str(doctor.id),
+            "role": "DOCTOR",
+            "email": doctor.email,
+            "name": doctor.name,
+            "phone_number": doctor.phone_number
+        })
         return {
             "status": "success",
             "access_token": token,
@@ -256,7 +286,13 @@ def auth_login(payload: LoginRequest, db: Session = Depends(get_db)):
     ).first()
 
     if patient and verify_password(payload.password, patient.password_hash):
-        token = create_access_token({"sub": str(patient.id), "role": "PATIENT", "email": patient.email, "name": patient.name})
+        token = create_access_token({
+            "sub": str(patient.id),
+            "role": "PATIENT",
+            "email": patient.email,
+            "name": patient.name,
+            "phone_number": patient.phone_number
+        })
         return {
             "status": "success",
             "access_token": token,
@@ -331,105 +367,9 @@ def haversine_distance_km(lat1: float, lon1: float, lat2: float, lon2: float) ->
 def root():
     return {"status": "online", "server": "Agents FastAPI Server", "models": ["Groq Llama 3.3 70B", "Groq Whisper", "Gemini 2.0 Flash"]}
 
-@app.get("/api/hospitals")
-def get_hospitals_endpoint(
-    lat: float = 11.0168,
-    lng: float = 76.9558,
-    radiusKm: float = 15.0,
-    query: Optional[str] = None,
-    specialty: Optional[str] = None,
-    limit: Optional[int] = 500,
-    db: Session = Depends(get_db)
-):
-    """
-    Queries real-time hospital spatial records from SQLite database,
-    computes Haversine radial distance relative to patient GPS coordinates,
-    and returns all hospital data points matching the user-defined distance range.
-    """
-    hospitals_query = db.query(HospitalDB).all()
-    results = []
+# NOTE: /api/hospitals, /api/agents/suggest-specialty, and /api/chat/patient-advisor 
+# are now registered above via hospital_router and chat_router (SOLID: SRP)
 
-    for h in hospitals_query:
-        dist = haversine_distance_km(lat, lng, h.latitude, h.longitude)
-        if dist > radiusKm:
-            continue
-
-        if query and query.strip():
-            q_clean = query.strip().lower()
-            if q_clean not in h.name.lower() and q_clean not in (h.address or "").lower():
-                continue
-
-        if specialty and specialty.strip():
-            s_clean = specialty.strip().lower()
-            if s_clean not in h.category.lower() and s_clean not in (h.specialties or "").lower() and s_clean not in (h.emergency_specialty_24x7 or "").lower():
-                continue
-
-        google_maps_url = f"https://www.google.com/maps/dir/?api=1&destination={h.latitude},{h.longitude}"
-
-        results.append({
-            "id": h.id,
-            "name": h.name,
-            "latitude": h.latitude,
-            "longitude": h.longitude,
-            "location": {"lat": h.latitude, "lng": h.longitude},
-            "beds": h.beds,
-            "emergencySpecialty24x7": h.emergency_specialty_24x7,
-            "bestSector": h.best_sector,
-            "rating": h.rating,
-            "reviewCount": h.review_count,
-            "category": h.category,
-            "specialties": h.specialties,
-            "emergency24x7": h.emergency_24x7,
-            "phone": h.phone,
-            "address": h.address,
-            "reviewSnippet": h.review_snippet,
-            "distanceKm": dist,
-            "googleMapsUrl": google_maps_url
-        })
-
-    results.sort(key=lambda x: x["distanceKm"])
-
-    # Dynamically assign proximity rank (1, 2, 3...) and distanceRange relative to live GPS location
-    final_results = []
-    max_limit = limit if limit else len(results)
-    for idx, item in enumerate(results[:max_limit]):
-        dist = item["distanceKm"]
-        if dist <= 5.0:
-            dist_range = "0–5 km (Immediate Proximity)"
-        elif dist <= 15.0:
-            dist_range = "5–15 km (Nearby District Range)"
-        elif dist <= 30.0:
-            dist_range = "15–30 km (Outer Highway Range)"
-        else:
-            dist_range = "30+ km (Extended District Range)"
-
-        item["rank"] = idx + 1
-        item["distanceRange"] = dist_range
-        final_results.append(item)
-
-    return final_results
-
-@app.post("/api/agents/suggest-specialty")
-def suggest_specialty_endpoint(payload: SpecialtyRequest):
-    """
-    Categorizes patient symptoms into hospital specialties using Groq Llama 3.3 70B.
-    """
-    return suggest_specialty_groq(payload.symptoms)
-
-@app.post("/api/chat/patient-advisor")
-def patient_advisor_endpoint(payload: PatientAdvisorRequest):
-    """
-    Patient Health Assistant Advisor Endpoint. Supports slash commands (/specialty, /comfort, /diagnostic, /triage, /emergency),
-    transient PDF analysis, organ-to-sector hospital mapping, and timeline medicine guardrails.
-    """
-    return process_patient_advisor_pipeline(
-        user_message=payload.message,
-        patient_name=payload.patientName,
-        patient_phone=payload.patientPhone,
-        pdf_context=payload.pdfContext,
-        user_lat=payload.lat,
-        user_lng=payload.lng
-    )
 
 @app.post("/api/prescriptions/parse")
 def parse_prescription_endpoint(payload: PrescriptionTextRequest):
@@ -449,193 +389,15 @@ async def parse_prescription_image_endpoint(file: UploadFile = File(...)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"OCR Image Parsing Error: {str(e)}")
 
-@app.post("/api/chat/message")
-def chat_message_endpoint(payload: ChatMessageRequest):
-    """
-    Sends a user message to the Groq Llama 3.3 70B health chatbot.
-    Maintains per-session conversation history in memory and injects Timeline Context.
-    Supports role='doctor' (clinical research mode) or role='patient' (consumer mode).
-    """
-    try:
-        reply = chat_with_groq(payload.sessionId, payload.message, role=payload.role)
-        return {"sessionId": payload.sessionId, "reply": reply}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Chat Error: {str(e)}")
+# NOTE: /api/chat/message is registered above via chat_router
 
-@app.post("/api/chat/clear")
-def chat_clear_endpoint(payload: ChatClearRequest):
-    """
-    Clears the conversation history for a session.
-    """
-    clear_session(payload.sessionId)
-    return {"status": "cleared", "sessionId": payload.sessionId}
 
 # ─── End of Auth Endpoints ───────────────────────────────────────────────────
 
 
 # ─── Timeline Endpoints (SQLite Persistent DB) ─────────────────────────────
-@app.post("/api/timeline/save")
-def timeline_save_endpoint(payload: Dict[str, Any] = Body(...), db: Session = Depends(get_db)):
-    """
-    Saves a confirmed prescription into SQLite database (`healthcare.db`), generating a narrative Visit Summary.
-    """
-    try:
-        # Generate Narrative Summary
-        from graphs.timeline import generate_visit_summary
-        visit_summary = generate_visit_summary(payload)
+# NOTE: /api/timeline/* routes are registered above via timeline_router
 
-        patient_id_raw = payload.get("patientId", "100001")
-        try:
-            patient_id_num = int(str(patient_id_raw).replace("pat-", ""))
-        except Exception:
-            patient_id_num = 100001
-
-        now = datetime.now()
-        rx_id = f"rx-{patient_id_num}-{now.strftime('%Y%m%d%H%M%S')}"
-
-        header = payload.get("header", {})
-        body = payload.get("body", {})
-        tail = payload.get("tail", {})
-        dietary = payload.get("dietaryAdvice", {})
-
-        pat_phone_raw = payload.get("patientPhone", "+919876543210")
-        try:
-            pat_cc, pat_phone_num = parse_phone_number(pat_phone_raw)
-        except Exception:
-            pat_cc, pat_phone_num = "+91", 9876543210
-
-        new_rx = PrescriptionDB(
-            id=rx_id,
-            patient_id=patient_id_num,
-            doctor_id=payload.get("doctorId", 500001),
-            source=payload.get("source", "doctor_voice"),
-            patient_name=payload.get("patientName", "Santhosh Kumar"),
-            patient_country_code=pat_cc,
-            patient_phone_number=pat_phone_num,
-            doctor_name=header.get("doctorName", "Dr. Prescribing Doctor"),
-            hospital_name=header.get("hospitalName", "Coimbatore Health Centre"),
-            recorded_diagnosis=body.get("recordedDiagnosis", ""),
-            medications_json=json.dumps(body.get("medications", [])),
-            dietary_advice_json=json.dumps(dietary),
-            advice=tail.get("advice", ""),
-            follow_up_date=tail.get("followUpDate", ""),
-            visit_summary=visit_summary,
-            created_at=now
-        )
-        db.add(new_rx)
-        db.commit()
-        db.refresh(new_rx)
-
-        # In-memory backwards compatibility sync
-        save_prescription_to_timeline(payload)
-
-        return {
-            "status": "saved",
-            "entry": {
-                "id": new_rx.id,
-                "patientId": str(new_rx.patient_id),
-                "date": now.strftime("%Y-%m-%d"),
-                "visitSummary": new_rx.visit_summary,
-                "source": new_rx.source,
-                "header": header,
-                "body": body,
-                "dietaryAdvice": dietary,
-                "tail": tail
-            }
-        }
-    except Exception as e:
-        db.rollback()
-        raise HTTPException(status_code=500, detail=f"Timeline Save Error: {str(e)}")
-
-
-@app.get("/api/timeline/{patient_id}")
-def timeline_get_endpoint(patient_id: str, doctor_id: Optional[str] = None, db: Session = Depends(get_db)):
-    """
-    Returns timeline entries for a patient.
-    If doctor_id is provided (Doctor Portal search): returns ONLY prescriptions issued by THAT doctor for this patient.
-    If doctor_id is None (Patient Portal search): returns ALL prescriptions for this patient across all doctors.
-    """
-    query_clean = str(patient_id).strip()
-    try:
-        patient_num = int(query_clean.replace("pat-", ""))
-    except Exception:
-        patient_num = -1
-
-    try:
-        _, parsed_search_num = parse_phone_number(query_clean)
-    except Exception:
-        try:
-            parsed_search_num = int(re.sub(r"\D", "", query_clean))
-        except Exception:
-            parsed_search_num = -1
-
-    query = db.query(PrescriptionDB).filter(
-        (PrescriptionDB.patient_id == patient_num) | 
-        (PrescriptionDB.patient_phone_number == parsed_search_num) |
-        (func.lower(PrescriptionDB.patient_name) == query_clean.lower())
-    )
-
-    if doctor_id:
-        try:
-            doc_num = int(str(doctor_id).replace("doc-", ""))
-            query = query.filter(PrescriptionDB.doctor_id == doc_num)
-        except Exception:
-            pass
-
-    rx_list = query.order_by(PrescriptionDB.created_at.desc()).all()
-
-    results = []
-    for idx, rx in enumerate(rx_list, 1):
-        try:
-            meds = json.loads(rx.medications_json)
-        except Exception:
-            meds = []
-        try:
-            dietary = json.loads(rx.dietary_advice_json) if rx.dietary_advice_json else {}
-        except Exception:
-            dietary = {}
-
-        results.append({
-            "id": rx.id,
-            "patientId": str(rx.patient_id),
-            "patientName": rx.patient_name,
-            "patientPhone": f"{rx.patient_country_code}{rx.patient_phone_number}",
-            "countryCode": rx.patient_country_code,
-            "phoneNumber": rx.patient_phone_number,
-            "date": rx.created_at.strftime("%Y-%m-%d"),
-            "time": rx.created_at.strftime("%H:%M"),
-            "index": idx,
-            "visitSummary": rx.visit_summary,
-            "source": rx.source,
-            "header": {
-                "doctorName": rx.doctor_name,
-                "hospitalName": rx.hospital_name,
-                "opdContact": "",
-                "date": rx.created_at.strftime("%Y-%m-%d")
-            },
-            "body": {
-                "recordedDiagnosis": rx.recorded_diagnosis,
-                "medications": meds
-            },
-            "dietaryAdvice": dietary,
-            "tail": {
-                "advice": rx.advice,
-                "followUpDate": rx.follow_up_date
-            }
-        })
-
-    # If DB is empty, fallback to memory
-    if not results:
-        results = get_patient_timeline(patient_id)
-
-    return {"patientId": patient_id, "prescriptions": results}
-
-@app.get("/api/timeline/context/{patient_id}")
-def timeline_context_endpoint(patient_id: str):
-    """
-    Returns enriched patient context built by Timeline Context Agent + Wellbeing State Agent.
-    """
-    return build_patient_health_context(patient_id)
 
 
 @app.post("/api/stt")
@@ -801,229 +563,8 @@ def update_patient_vitals(payload: VitalsUpdateRequest, db: Session = Depends(ge
         "age": patient.age, "gender": patient.gender, "height_cm": patient.height_cm, "weight_kg": patient.weight_kg, "blood_group": patient.blood_group
     }}
 
-class SlotInfo(BaseModel):
-    routine_slot: str
-    slot_start_time: str
-    slot_end_time: str
+# NOTE: /api/adherence/* routes are registered above via adherence_router
 
-class CreateScheduleRequest(BaseModel):
-    prescription_id: str
-    patient_id: int
-    medication_name: str
-    dosage: Optional[str] = None
-    food_relation: str = "After Food"
-    duration_days: int = 5
-    slots: List[SlotInfo]
-
-@app.post("/api/adherence/schedule")
-def create_adherence_schedule_endpoint(payload: CreateScheduleRequest, db: Session = Depends(get_db)):
-    """
-    Creates dynamic user-configured adherence schedules and today's check-in log records in SQLite.
-    Resolves canonical patient identity (ID and Phone) to guarantee 100% cross-portal match.
-    """
-    today_str = datetime.now().strftime("%Y-%m-%d")
-    created_schedules = []
-
-    pat_param = payload.patient_id
-    patient = db.query(PatientDB).filter(
-        (PatientDB.id == pat_param) | (PatientDB.phone_number == pat_param)
-    ).first()
-
-    real_pat_id = patient.id if patient else pat_param
-    real_phone_num = patient.phone_number if patient else pat_param
-
-    for slot in payload.slots:
-        # Check if schedule already exists for this rx + medicine + slot using dual patient key
-        existing = db.query(AdherenceScheduleDB).filter(
-            AdherenceScheduleDB.prescription_id == payload.prescription_id,
-            (AdherenceScheduleDB.patient_id == real_pat_id) | (AdherenceScheduleDB.patient_id == real_phone_num),
-            AdherenceScheduleDB.medication_name == payload.medication_name,
-            AdherenceScheduleDB.routine_slot == slot.routine_slot
-        ).first()
-
-        if existing:
-            existing.patient_id = real_pat_id
-            existing.slot_start_time = slot.slot_start_time
-            existing.slot_end_time = slot.slot_end_time
-            existing.food_relation = payload.food_relation
-            existing.duration_days = payload.duration_days
-            sched = existing
-        else:
-            sched = AdherenceScheduleDB(
-                prescription_id=payload.prescription_id,
-                patient_id=real_pat_id,
-                medication_name=payload.medication_name,
-                dosage=payload.dosage or "",
-                food_relation=payload.food_relation,
-                routine_slot=slot.routine_slot,
-                slot_start_time=slot.slot_start_time,
-                slot_end_time=slot.slot_end_time,
-                duration_days=payload.duration_days,
-                total_doses_expected=payload.duration_days
-            )
-            db.add(sched)
-            db.flush()
-
-        # Create or verify today's log entry
-        log_entry = db.query(AdherenceLogDB).filter(
-            AdherenceLogDB.schedule_id == sched.id,
-            (AdherenceLogDB.patient_id == real_pat_id) | (AdherenceLogDB.patient_id == real_phone_num),
-            AdherenceLogDB.scheduled_date == today_str,
-            AdherenceLogDB.routine_slot == slot.routine_slot
-        ).first()
-
-        if not log_entry:
-            log_entry = AdherenceLogDB(
-                schedule_id=sched.id,
-                patient_id=real_pat_id,
-                medication_name=payload.medication_name,
-                scheduled_date=today_str,
-                routine_slot=slot.routine_slot,
-                status="DUE"
-            )
-            db.add(log_entry)
-        else:
-            log_entry.patient_id = real_pat_id
-
-        created_schedules.append({
-            "schedule_id": sched.id,
-            "medication_name": sched.medication_name,
-            "routine_slot": sched.routine_slot,
-            "slot_start_time": sched.slot_start_time,
-            "slot_end_time": sched.slot_end_time,
-            "food_relation": sched.food_relation
-        })
-
-    db.commit()
-    return {"status": "success", "message": "Adherence schedule & check-in log saved successfully.", "schedules": created_schedules}
-
-
-@app.get("/api/adherence/patient/{patient_id}")
-def get_patient_adherence_endpoint(patient_id: str, db: Session = Depends(get_db)):
-    """
-    Returns active adherence schedules and today's check-in status aggregated across ALL active prescriptions for a patient.
-    Uses Dual Patient Key Resolution (ID + Phone) to guarantee 100% cross-portal match.
-    """
-    query_clean = str(patient_id).strip()
-    try:
-        patient_num = int(query_clean.replace("pat-", ""))
-    except Exception:
-        patient_num = 100001
-
-    try:
-        _, parsed_num = parse_phone_number(query_clean)
-    except Exception:
-        try:
-            parsed_num = int(re.sub(r"\D", "", query_clean))
-        except Exception:
-            parsed_num = -1
-
-    # Find canonical patient record
-    patient = db.query(PatientDB).filter(
-        (PatientDB.id == patient_num) | 
-        (PatientDB.phone_number == parsed_num) |
-        (PatientDB.id == parsed_num)
-    ).first()
-
-    real_pat_id = patient.id if patient else patient_num
-    real_phone_num = patient.phone_number if patient else parsed_num
-    today_str = datetime.now().strftime("%Y-%m-%d")
-
-    # Fetch all schedules matching either patient_id or phone_number
-    schedules = db.query(AdherenceScheduleDB).filter(
-        (AdherenceScheduleDB.patient_id == real_pat_id) |
-        (AdherenceScheduleDB.patient_id == real_phone_num)
-    ).all()
-
-    # Pre-load prescription details for doctor provenance
-    rx_map = {}
-    rxs = db.query(PrescriptionDB).filter(
-        (PrescriptionDB.patient_id == real_pat_id) |
-        (PrescriptionDB.patient_phone_number == real_phone_num)
-    ).all()
-    for rx in rxs:
-        rx_map[rx.id] = {
-            "doctor_name": rx.doctor_name,
-            "hospital_name": rx.hospital_name,
-            "date": rx.created_at.strftime("%b %d") if rx.created_at else "Recent"
-        }
-
-    formatted_slots = {"morning": [], "noon": [], "night": []}
-    total_expected = 0
-    total_taken = 0
-
-    for sched in schedules:
-        total_expected += 1
-        rx_info = rx_map.get(sched.prescription_id, {"doctor_name": "Dr. Prescribing Doctor", "date": "Recent"})
-        
-        # Check today log
-        log = db.query(AdherenceLogDB).filter(
-            AdherenceLogDB.schedule_id == sched.id,
-            AdherenceLogDB.scheduled_date == today_str
-        ).first()
-
-        status = log.status if log else "DUE"
-        if status == "TAKEN":
-            total_taken += 1
-
-        slot_key = sched.routine_slot.lower()
-        if slot_key not in formatted_slots:
-            slot_key = "morning"
-
-        formatted_slots[slot_key].append({
-            "schedule_id": sched.id,
-            "prescription_id": sched.prescription_id,
-            "medication_name": sched.medication_name,
-            "dosage": sched.dosage,
-            "food_relation": sched.food_relation,
-            "routine_slot": sched.routine_slot,
-            "slot_start_time": sched.slot_start_time,
-            "slot_end_time": sched.slot_end_time,
-            "doctor_name": rx_info["doctor_name"],
-            "visit_date": rx_info["date"],
-            "status": status,
-            "scheduled_date": today_str
-        })
-
-    adherence_pct = int((total_taken / total_expected * 100)) if total_expected > 0 else 100
-
-    return {
-        "status": "success",
-        "patient_id": real_pat_id,
-        "master_adherence_pct": adherence_pct,
-        "total_taken": total_taken,
-        "total_expected": total_expected,
-        "slots": formatted_slots
-    }
-
-@app.post("/api/adherence/checkin")
-def checkin_dose_endpoint(payload: AdherenceCheckinRequest, db: Session = Depends(get_db)):
-    log = db.query(AdherenceLogDB).filter(
-        AdherenceLogDB.schedule_id == payload.schedule_id,
-        AdherenceLogDB.patient_id == payload.patient_id,
-        AdherenceLogDB.scheduled_date == payload.scheduled_date,
-        AdherenceLogDB.routine_slot == payload.routine_slot
-    ).first()
-
-    if not log:
-        sched = db.query(AdherenceScheduleDB).filter(AdherenceScheduleDB.id == payload.schedule_id).first()
-        med_name = sched.medication_name if sched else "Prescribed Medicine"
-        log = AdherenceLogDB(
-            schedule_id=payload.schedule_id,
-            patient_id=payload.patient_id,
-            medication_name=med_name,
-            scheduled_date=payload.scheduled_date,
-            routine_slot=payload.routine_slot,
-            status="TAKEN",
-            check_in_timestamp=datetime.utcnow()
-        )
-        db.add(log)
-    else:
-        log.status = "TAKEN"
-        log.check_in_timestamp = datetime.utcnow()
-
-    db.commit()
-    return {"status": "success", "message": "Dose check-in verified successfully.", "check_in_timestamp": datetime.utcnow().isoformat()}
 
 # ─── Multi-Agent Mesh Endpoints ───────────────────────────────────────────────
 @app.get("/api/agent/guardian/{patient_id}")

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import PrescriptionTimelineCard from '../components/PrescriptionTimelineCard.jsx';
 import TickRail from '../components/TickRail.jsx';
+import { getPatientTimeline } from '../services/prescriptionService';
 
 export default function TimelinePage({ patientId = '9876543210', doctorId = null }) {
   const [prescriptions, setPrescriptions] = useState([]);
@@ -12,9 +13,7 @@ export default function TimelinePage({ patientId = '9876543210', doctorId = null
   const fetchTimeline = async () => {
     setLoading(true);
     try {
-      const url = `http://localhost:8000/api/timeline/${patientId}${doctorId ? `?doctor_id=${doctorId}` : ''}`;
-      const res = await fetch(url);
-      const data = await res.json();
+      const data = await getPatientTimeline(patientId, doctorId);
       setPrescriptions(data.prescriptions || []);
       if (data.prescriptions?.length > 0) {
         setActiveIndex(data.prescriptions[0].index);

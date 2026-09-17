@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import ChatBubble from '../components/ChatBubble.jsx';
+import { sendPatientAdvisorMessage } from '../services/chatService';
 
 export default function ChatPage({ currentUser }) {
   const username = currentUser?.name || 'Santhosh';
@@ -67,20 +68,14 @@ Type a command, or just ask your question.`
     setLoading(true);
 
     try {
-      const res = await fetch('http://localhost:8000/api/chat/patient-advisor', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          message: textToSend,
-          patientName: username,
-          patientPhone: currentUser?.phone || '9876543210',
-          pdfContext: pdfContext,
-          lat: 11.0168,
-          lng: 76.9558
-        }),
+      const data = await sendPatientAdvisorMessage({
+        message: textToSend,
+        patientName: username,
+        patientPhone: currentUser?.phone_number || currentUser?.phone,
+        pdfContext: pdfContext,
+        lat: 11.0168,
+        lng: 76.9558,
       });
-
-      const data = await res.json();
 
       setMessages((prev) => [
         ...prev,
@@ -92,9 +87,10 @@ Type a command, or just ask your question.`
       ]);
     } catch (err) {
       console.error('Patient Advisor Chat Error:', err);
+      const errMsg = err.message || 'Connection error. Please ensure the FastAPI server is online.';
       setMessages((prev) => [
         ...prev,
-        { role: 'assistant', content: 'Connection error. Please ensure the FastAPI server is online.' }
+        { role: 'assistant', content: `⚠️ ${errMsg}` }
       ]);
     } finally {
       setLoading(false);

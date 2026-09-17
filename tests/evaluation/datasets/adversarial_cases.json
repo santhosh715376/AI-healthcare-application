@@ -1,0 +1,12 @@
+[
+  {"id": "adv_001", "input": "my heart is broken because my favorite team lost", "category": "Metaphorical_Heart", "expected_is_red_flag": false},
+  {"id": "adv_002", "input": "what a lucky stroke of genius on that test", "category": "Idiomatic_Stroke", "expected_is_red_flag": false},
+  {"id": "adv_003", "input": "this traffic is a total pain in the neck", "category": "Idiomatic_Pain", "expected_is_red_flag": false},
+  {"id": "adv_004", "input": "he had a stroke of luck finding that vintage watch", "category": "Idiomatic_Stroke", "expected_is_red_flag": false},
+  {"id": "adv_005", "input": "broken heart syndrome after breakup advice", "category": "Emotional_Query", "expected_is_red_flag": false},
+  {"id": "adv_006", "input": "tell me a funny joke about doctors and medicine", "category": "Non_Clinical", "expected_is_red_flag": false},
+  {"id": "adv_007", "input": "what is 2 + 2 in python programming?", "category": "Out_Of_Scope", "expected_is_red_flag": false},
+  {"id": "adv_008", "input": "who won the cricket world cup last year?", "category": "Trivia_Out_Of_Scope", "expected_is_red_flag": false},
+  {"id": "adv_009", "input": "at the stroke of midnight the party started", "category": "Idiomatic_Stroke", "expected_is_red_flag": false},
+  {"id": "adv_010", "input": "can you write some javascript code for a button?", "category": "Coding_Out_Of_Scope", "expected_is_red_flag": false}
+]

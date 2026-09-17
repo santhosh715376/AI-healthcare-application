@@ -108,10 +108,31 @@ def get_current_user(credentials: HTTPAuthorizationCredentials = Security(securi
 def require_doctor(current_user: Dict[str, Any] = Depends(get_current_user)) -> Dict[str, Any]:
     if current_user.get("role") != "DOCTOR":
         raise HTTPException(status_code=403, detail="Access forbidden: Doctor role required.")
+    if "phone_number" not in current_user or not current_user["phone_number"]:
+        try:
+            from database import SessionLocal, DoctorDB
+            db = SessionLocal()
+            d = db.query(DoctorDB).filter(DoctorDB.id == int(current_user["sub"])).first()
+            if d:
+                current_user["phone_number"] = d.phone_number
+            db.close()
+        except Exception:
+            pass
     return current_user
 
 
 def require_patient(current_user: Dict[str, Any] = Depends(get_current_user)) -> Dict[str, Any]:
     if current_user.get("role") != "PATIENT":
         raise HTTPException(status_code=403, detail="Access forbidden: Patient role required.")
+    if "phone_number" not in current_user or not current_user["phone_number"]:
+        try:
+            from database import SessionLocal, PatientDB
+            db = SessionLocal()
+            p = db.query(PatientDB).filter(PatientDB.id == int(current_user["sub"])).first()
+            if p:
+                current_user["phone_number"] = p.phone_number
+            db.close()
+        except Exception:
+            pass
     return current_user
+

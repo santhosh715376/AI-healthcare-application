@@ -1,0 +1,17 @@
+[
+  {"id": "ne_001", "input": "I have a mild sore throat and runny nose since yesterday", "category": "URTI", "expected_is_red_flag": false, "expected_agent": "DIFFERENTIAL_RANKER"},
+  {"id": "ne_002", "input": "what medicine was prescribed to me for my fever?", "category": "Prescription_Ledger", "expected_is_red_flag": false, "expected_agent": "CHAIN_A_FACTUAL_PRESCRIPTION_AGENT"},
+  {"id": "ne_003", "input": "hello doctor, good morning", "category": "Greeting", "expected_is_red_flag": false, "expected_agent": "GREETING_AGENT"},
+  {"id": "ne_004", "input": "my right knee hurts after jogging this morning", "category": "Orthopedics", "expected_is_red_flag": false, "expected_agent": "SPECIALTY_AGENT"},
+  {"id": "ne_005", "input": "did i take my afternoon dose today?", "category": "Adherence_Status", "expected_is_red_flag": false, "expected_agent": "CHAIN_A_FACTUAL_ADHERENCE_AGENT"},
+  {"id": "ne_006", "input": "can i take paracetamol with food?", "category": "Drug_Food_Interaction", "expected_is_red_flag": false, "expected_agent": "CHAIN_B_SAFETY_INTERACTION_AGENT"},
+  {"id": "ne_007", "input": "I missed my morning dose of calpol for my fever", "category": "Missed_Dose", "expected_is_red_flag": false, "expected_agent": "CHAIN_B_GUARDIAN_INTERVENTION_AGENT"},
+  {"id": "ne_008", "input": "/specialty cardiology", "category": "Slash_Command", "expected_is_red_flag": false, "expected_agent": "SPECIALTY_AGENT"},
+  {"id": "ne_009", "input": "/comfort gastritis", "category": "Slash_Command", "expected_is_red_flag": false, "expected_agent": "COMFORT_DIAGNOSTIC_AGENT"},
+  {"id": "ne_010", "input": "I have mild indigestion and bloating after dinner", "category": "Gastroenterology", "expected_is_red_flag": false, "expected_agent": "SPECIALTY_AGENT"},
+  {"id": "ne_011", "input": "dry itchy rash on my elbow for past two days", "category": "Dermatology", "expected_is_red_flag": false, "expected_agent": "SPECIALTY_AGENT"},
+  {"id": "ne_012", "input": "can I double my dose of blood pressure medication?", "category": "Dosage_Guardrail", "expected_is_red_flag": false, "expected_agent": "CHAIN_B_GUARDRAIL_ENFORCER"},
+  {"id": "ne_013", "input": "mild dry cough that occurs at night", "category": "Pulmonology", "expected_is_red_flag": false, "expected_agent": "DIFFERENTIAL_RANKER"},
+  {"id": "ne_014", "input": "what was my recorded diagnosis during recent visit?", "category": "Prescription_Ledger", "expected_is_red_flag": false, "expected_agent": "CHAIN_A_FACTUAL_PRESCRIPTION_AGENT"},
+  {"id": "ne_015", "input": "how to prepare healthy diet for diabetic patient", "category": "Diet_Nutrition", "expected_is_red_flag": false, "expected_agent": "DIFFERENTIAL_RANKER"}
+]

@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import PrescriptionCard from '../components/PrescriptionCard.jsx';
 import ChatBubble from '../components/ChatBubble.jsx';
 import TimelinePage from './TimelinePage.jsx';
+import { parsePrescriptionVoice, savePrescriptionToTimeline } from '../services/prescriptionService';
+import { sendChatMessage } from '../services/chatService';
 
 export default function DoctorPortal({ currentUser }) {
   const docLicense = currentUser?.doc_license || 'NMC-TN-88492';
@@ -44,13 +46,7 @@ export default function DoctorPortal({ currentUser }) {
 
     setIsAutoParsing(true);
     try {
-      const res = await fetch('http://localhost:8000/api/prescriptions/parse', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        signal: abortControllerRef.current.signal,
-        body: JSON.stringify({ rawText: textToParse, patientId: activePatientId, source: 'doctor_voice' }),
-      });
-      const json = await res.json();
+      const json = await parsePrescriptionVoice(textToParse, activePatientId, 'doctor_voice');
       setParsedData(json);
     } catch (err) {
       if (err.name !== 'AbortError') {
@@ -133,11 +129,7 @@ export default function DoctorPortal({ currentUser }) {
     if (!payload) return;
 
     try {
-      await fetch('http://localhost:8000/api/timeline/save', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
+      await savePrescriptionToTimeline(payload);
       setSaveSuccess(true);
       setTimeout(() => setSaveSuccess(false), 4000);
     } catch (err) {
@@ -156,12 +148,7 @@ export default function DoctorPortal({ currentUser }) {
     setChatLoading(true);
 
     try {
-      const res = await fetch('http://localhost:8000/api/chat/message', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sessionId, message: userText, role: 'doctor' }),
-      });
-      const data = await res.json();
+      const data = await sendChatMessage({ sessionId, message: userText, role: 'doctor' });
       setChatMessages((prev) => [...prev, { role: 'assistant', content: data.reply }]);
     } catch (err) {
       console.error('Clinical Chat Error:', err);

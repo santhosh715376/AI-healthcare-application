@@ -9,8 +9,39 @@ from sqlalchemy.orm import declarative_base, sessionmaker, relationship, Session
 
 # Primary System Database Location
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DB_PATH = os.path.join(BASE_DIR, "healthcare.db")
+DB_PATH = os.environ.get(
+    "HEALTHCARE_DB_PATH",
+    os.path.join(BASE_DIR, "clinical_platform.db")
+)
 DATABASE_URL = f"sqlite:///{DB_PATH}"
+
+from sqlalchemy.types import TypeDecorator
+
+class JSONType(TypeDecorator):
+    """
+    SQLAlchemy TypeDecorator for automatic JSON serialization/deserialization.
+    Allows transparent python list/dict operations while storing clean JSON in SQLite.
+    """
+    impl = Text
+    cache_ok = True
+
+    def process_bind_param(self, value, dialect):
+        if value is None:
+            return None
+        if isinstance(value, (dict, list)):
+            return json.dumps(value)
+        return str(value)
+
+    def process_result_value(self, value, dialect):
+        if value is None:
+            return []
+        if isinstance(value, (dict, list)):
+            return value
+        try:
+            return json.loads(value)
+        except (json.JSONDecodeError, TypeError):
+            return []
+
 
 engine = create_engine(
     DATABASE_URL,
@@ -124,8 +155,8 @@ class PrescriptionDB(Base):
     hospital_name = Column(String, nullable=False)
     
     recorded_diagnosis = Column(Text, nullable=False)
-    medications_json = Column(Text, nullable=False)  # Validated JSON string array
-    dietary_advice_json = Column(Text, nullable=True)
+    medications_json = Column(JSONType, nullable=False, default=list)  # Transparent JSON list
+    dietary_advice_json = Column(JSONType, nullable=True, default=list)
     advice = Column(Text, nullable=True)
     follow_up_date = Column(String, nullable=True)
     visit_summary = Column(Text, nullable=True)
@@ -144,7 +175,7 @@ class HospitalDB(Base):
     category = Column(String, default="Multispecialty Hospital")
     specialties = Column(Text, default="General Medicine, Emergency Care")
     emergency_specialty_24x7 = Column(Text, default="24/7 Emergency & General Medicine")
-    facilities_json = Column(Text, default='["24/7 Emergency", "ICU", "Pharmacy"]')
+    facilities_json = Column(JSONType, default=list)
     best_sector = Column(Text, default="General Multispecialty")
     rating = Column(Float, default=4.5)
     review_count = Column(Integer, default=150)
